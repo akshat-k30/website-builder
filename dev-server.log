@@ -1,0 +1,27 @@
+﻿
+> website-builder@0.1.0 dev
+> next dev
+
+Γû▓ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.8:3000
+- Environments: .env
+Γ£ô Ready in 589ms
+
+ POST /api/auth/signup 201 in 653ms (next.js: 224ms, application-code: 430ms)
+ POST /api/auth/callback/credentials 200 in 842ms (next.js: 822ms, application-code: 21ms)
+ GET /api/auth/csrf 200 in 21ms (next.js: 11ms, application-code: 10ms)
+ POST /api/auth/callback/credentials 200 in 32ms (next.js: 3ms, application-code: 29ms)
+ GET /api/auth/csrf 200 in 30ms (next.js: 10ms, application-code: 20ms)
+ POST /api/auth/callback/credentials 200 in 26ms (next.js: 3ms, application-code: 23ms)
+ GET /api/auth/csrf 200 in 33ms (next.js: 10ms, application-code: 23ms)
+ POST /api/auth/callback/credentials 200 in 312ms (next.js: 4ms, application-code: 307ms)
+ GET /dashboard 307 in 1178ms (next.js: 910ms, application-code: 268ms)
+ GET /login 200 in 516ms (next.js: 451ms, application-code: 65ms)
+ GET /dashboard 307 in 78ms (next.js: 4ms, application-code: 75ms)
+ GET /login 200 in 56ms (next.js: 4ms, application-code: 52ms)
+ GET /dashboard 307 in 62ms (next.js: 5ms, application-code: 57ms)
+ POST /api/auth/signup 409 in 11ms (next.js: 2ms, application-code: 8ms)
+ POST /api/auth/signup 400 in 8ms (next.js: 3ms, application-code: 5ms)
+ GET /api/auth/csrf 200 in 35ms (next.js: 13ms, application-code: 22ms)
+ POST /api/auth/callback/credentials 401 in 319ms (next.js: 3ms, application-code: 316ms)

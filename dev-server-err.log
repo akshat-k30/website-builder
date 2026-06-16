@@ -1,0 +1,9 @@
+⚠ Port 3000 is in use by process 4928, using available port 3002 instead.
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3001
+- PID:          17748
+- Dir:          C:\Users\aksha\OneDrive\Documents\developer\opencode_practice\website-builder
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 17748 /F to stop it.
