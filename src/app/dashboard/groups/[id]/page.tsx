@@ -3,6 +3,8 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import RemoveMemberButton from "@/components/RemoveMemberButton"
+import DeleteGroupButton from "@/components/DeleteGroupButton"
 
 interface GroupPageProps {
   params: Promise<{ id: string }>
@@ -73,16 +75,23 @@ export default async function GroupPage({ params }: GroupPageProps) {
 
       {/* Group Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-1">{group.name}</h1>
-        {group.description && (
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
-            {group.description}
-          </p>
-        )}
-        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">
-          Created by {group.creator.name} ·{" "}
-          {new Date(group.createdAt).toLocaleDateString()}
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-1">{group.name}</h1>
+            {group.description && (
+              <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+                {group.description}
+              </p>
+            )}
+            <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">
+              Created by {group.creator.name} ·{" "}
+              {new Date(group.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+          {isAdmin && (
+            <DeleteGroupButton groupId={id} groupName={group.name} />
+          )}
+        </div>
       </div>
 
       {/* Invite Code Card */}
@@ -127,15 +136,24 @@ export default async function GroupPage({ params }: GroupPageProps) {
                   </p>
                 </div>
               </div>
-              <span
-                className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                  member.role === "admin"
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                    : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                }`}
-              >
-                {member.role}
-              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                    member.role === "admin"
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                  }`}
+                >
+                  {member.role}
+                </span>
+                {isAdmin && member.role !== "admin" && member.user.id !== user.id && (
+                  <RemoveMemberButton
+                    groupId={id}
+                    memberId={member.id}
+                    memberName={member.user.name}
+                  />
+                )}
+              </div>
             </div>
           ))}
         </div>

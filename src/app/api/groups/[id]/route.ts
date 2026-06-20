@@ -89,3 +89,59 @@ export async function GET(
     )
   }
 }
+
+// DELETE /api/groups/[id] — Delete a group (admin only)
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    })
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    const { id } = await params
+
+    // Check if the current user is an admin of this group
+    const membership = await prisma.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId: id,
+          userId: user.id,
+        },
+      },
+    })
+
+    if (!membership || membership.role !== "admin") {
+      return NextResponse.json(
+        { error: "Only admins can delete groups" },
+        { status: 403 }
+      )
+    }
+
+    // Delete all members first, then the group
+    await prisma.groupMember.deleteMany({
+      where: { groupId: id },
+    })
+
+    await prisma.group.delete({
+      where: { id },
+    })
+
+    return NextResponse.json({ message: "Group deleted successfully" })
+  } catch (error) {
+    console.error("Delete group error:", error)
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    )
+  }
+}
