@@ -20,6 +20,12 @@ export default function Navbar() {
             >
               Dashboard
             </Link>
+            <Link
+              href="/dashboard/groups/create"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            >
+              New Group
+            </Link>
             <span className="text-sm text-zinc-500">{session.user.name}</span>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
