@@ -35,6 +35,12 @@ export default async function DashboardPage() {
     orderBy: { joinedAt: "desc" },
   })
 
+  // Check if user has a LinkedIn profile
+  const linkedinProfile = await prisma.linkedInProfile.findUnique({
+    where: { userId: user.id },
+    select: { id: true, parsedName: true, updatedAt: true },
+  })
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-bold mb-2">Welcome, {user.name}</h1>
@@ -62,12 +68,26 @@ export default async function DashboardPage() {
             Enter an invite code to join an existing group.
           </p>
         </Link>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 opacity-50 cursor-not-allowed">
-          <h2 className="font-semibold mb-1">🌐 Build Website</h2>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Coming in Phase 3 — LinkedIn import + AI generation.
-          </p>
-        </div>
+        <Link
+          href={linkedinProfile ? "/dashboard/linkedin/review" : "/dashboard/linkedin"}
+          className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+        >
+          {linkedinProfile ? (
+            <>
+              <h2 className="font-semibold mb-1">✓ LinkedIn Imported</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                Profile data ready — click to review or edit.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="font-semibold mb-1">📄 Import LinkedIn</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                Upload your LinkedIn PDF to get started.
+              </p>
+            </>
+          )}
+        </Link>
       </div>
 
       {/* My Groups */}

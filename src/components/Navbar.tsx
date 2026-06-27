@@ -21,6 +21,12 @@ export default function Navbar() {
               Dashboard
             </Link>
             <Link
+              href="/dashboard/linkedin"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            >
+              LinkedIn Import
+            </Link>
+            <Link
               href="/dashboard/groups/create"
               className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             >
