@@ -41,6 +41,12 @@ export default async function DashboardPage() {
     select: { id: true, parsedName: true, updatedAt: true },
   })
 
+  // Check if user has generated website content
+  const website = await prisma.website.findUnique({
+    where: { userId: user.id },
+    select: { id: true, status: true, updatedAt: true },
+  })
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-bold mb-2">Welcome, {user.name}</h1>
@@ -49,7 +55,7 @@ export default async function DashboardPage() {
       </p>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 sm:grid-cols-3 mb-10">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-10">
         <Link
           href="/dashboard/groups/create"
           className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
@@ -84,6 +90,30 @@ export default async function DashboardPage() {
               <h2 className="font-semibold mb-1">📄 Import LinkedIn</h2>
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
                 Upload your LinkedIn PDF to get started.
+              </p>
+            </>
+          )}
+        </Link>
+        <Link
+          href="/dashboard/generate"
+          className={`rounded-xl border p-5 transition-colors ${
+            linkedinProfile
+              ? "border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600"
+              : "border-zinc-200 dark:border-zinc-800 opacity-50 cursor-not-allowed"
+          }`}
+        >
+          {website ? (
+            <>
+              <h2 className="font-semibold mb-1">✓ Content Generated</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                AI content ready — click to preview or edit.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="font-semibold mb-1">🤖 Generate Content</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                {linkedinProfile ? "Use AI to create website copy." : "Import LinkedIn first."}
               </p>
             </>
           )}

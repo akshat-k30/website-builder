@@ -503,6 +503,23 @@ export default function LinkedInReviewPage() {
         </div>
       </section>
 
+      {/* Generate CTA */}
+      <section className="mb-8">
+        <div className="rounded-xl border border-violet-200 dark:border-violet-900/50 bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 p-6 text-center">
+          <h3 className="font-semibold text-lg mb-2">Ready to generate your website?</h3>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+            AI will transform your profile data into polished, professional website copy.
+          </p>
+          <Link
+            href="/dashboard/generate"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-violet-500/25 transition-all duration-200 hover:shadow-xl hover:shadow-violet-500/30 hover:-translate-y-0.5"
+            id="btn-generate-content"
+          >
+            ✨ Generate Website Content →
+          </Link>
+        </div>
+      </section>
+
       {/* Action Bar */}
       <div className="sticky bottom-0 bg-white dark:bg-black border-t border-zinc-200 dark:border-zinc-800 -mx-6 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
