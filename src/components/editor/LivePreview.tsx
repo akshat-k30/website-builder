@@ -10,6 +10,8 @@ const BoldDeveloper = dynamic(() => import("@/components/templates/BoldDeveloper
 const CreativePortfolio = dynamic(() => import("@/components/templates/CreativePortfolio"), { ssr: false })
 const ExecutivePro = dynamic(() => import("@/components/templates/ExecutivePro"), { ssr: false })
 
+import type { ComponentType } from "react"
+
 interface LivePreviewProps {
   content: WebsiteContent
   theme: TemplateTheme
@@ -18,13 +20,14 @@ interface LivePreviewProps {
 
 export default function LivePreview({ content, theme, templateId }: LivePreviewProps) {
   // Select the right component based on templateId
-  let TemplateComponent = ModernMinimal // Default
+  let TemplateComponent: ComponentType<{ content: WebsiteContent; theme: TemplateTheme }> = ModernMinimal as any
+  
   if (templateId === "bold-developer") {
-    TemplateComponent = BoldDeveloper
+    TemplateComponent = BoldDeveloper as any
   } else if (templateId === "creative-portfolio") {
-    TemplateComponent = CreativePortfolio
+    TemplateComponent = CreativePortfolio as any
   } else if (templateId === "executive-pro") {
-    TemplateComponent = ExecutivePro
+    TemplateComponent = ExecutivePro as any
   }
 
   return (
