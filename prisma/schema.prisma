@@ -71,6 +71,8 @@ model Website {
   userId             String   @unique
   aiGeneratedContent String   @default("{}")
   userEditedContent  String?
+  templateId         String?
+  themeSettings      String   @default("{}")
   status             String   @default("draft")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
