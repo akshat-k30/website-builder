@@ -62,66 +62,80 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-6">
-      <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center mb-8">
-          Create your account
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1">
-              Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white"
-            />
+    <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-6 bg-background transition-colors">
+      <div className="w-full max-w-md my-12">
+        <div className="bg-card rounded-2xl shadow-xl border border-border p-8 transition-colors">
+          <div className="text-center mb-8 flex flex-col items-center">
+            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4 shadow-sm">
+              W
+            </div>
+            <h1 className="text-2xl font-bold text-foreground mb-1">
+              Create an account
+            </h1>
+            <p className="text-sm text-muted-foreground">Start building your portfolio</p>
           </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white"
-            />
-          </div>
-          {error && (
-            <p className="text-sm text-red-500">{error}</p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            {loading ? "Creating account..." : "Sign Up"}
-          </button>
-        </form>
-        <p className="mt-6 text-center text-sm text-zinc-500">
-          Already have an account?{" "}
-          <Link href="/login" className="font-medium text-zinc-900 underline dark:text-white">
-            Sign in
-          </Link>
-        </p>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="name" className="block text-sm font-semibold text-foreground mb-1.5">
+                Full Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="John Doe"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-1.5">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold text-foreground mb-1.5">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minLength={8}
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              />
+            </div>
+            {error && (
+              <div className="text-sm text-red-500 bg-red-500/10 px-4 py-2.5 rounded-lg border border-red-500/20 font-medium">
+                {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover disabled:opacity-50 shadow-md shadow-primary/20 transition-all active:scale-[0.98]"
+            >
+              {loading ? "Creating account..." : "Create Account →"}
+            </button>
+          </form>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/login" className="font-bold text-primary hover:text-primary-hover transition-colors">
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

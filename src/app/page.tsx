@@ -11,28 +11,31 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 px-6 py-24 text-center">
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+    <div className="flex flex-col items-center justify-center flex-1 px-6 py-24 text-center bg-background min-h-[calc(100vh-73px)]">
+      <div className="bg-primary/10 text-primary font-bold px-4 py-2 rounded-full mb-8 text-sm">
+        Welcome to the Future of Portfolios
+      </div>
+      <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl text-foreground max-w-3xl">
         Your LinkedIn Profile
         <br />
-        <span className="text-blue-600 dark:text-blue-400">
+        <span className="text-primary mt-2 block">
           Becomes a Website
         </span>
       </h1>
-      <p className="mt-6 max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
+      <p className="mt-8 max-w-xl text-lg text-muted-foreground leading-relaxed mx-auto">
         Paste your LinkedIn URL, let AI generate professional website content,
         pick a template, and publish — all in under an hour. No coding required.
       </p>
-      <div className="mt-10 flex items-center gap-4">
+      <div className="mt-12 flex items-center justify-center gap-4 w-full max-w-md mx-auto">
         <Link
           href="/signup"
-          className="rounded-lg bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="flex-1 rounded-xl bg-primary px-6 py-4 text-base font-bold text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 active:translate-y-0"
         >
           Get Started Free
         </Link>
         <Link
           href="/login"
-          className="rounded-lg border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+          className="flex-1 rounded-xl border-2 border-border bg-card px-6 py-4 text-base font-bold text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all"
         >
           Sign In
         </Link>

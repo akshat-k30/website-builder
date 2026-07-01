@@ -23,25 +23,27 @@ export default function EditorSidebar({ activeSection, onSelectSection, onSave, 
   const router = useRouter()
 
   return (
-    <div className="w-64 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col shadow-[4px_0_15px_rgba(0,0,0,0.02)] z-10">
-      <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Website Editor</h2>
-        <p className="text-sm text-zinc-500">Select a section to edit</p>
+    <div className="w-72 bg-card border-r border-border flex flex-col shadow-sm z-10 shrink-0">
+      <div className="p-5 border-b border-border">
+        <h2 className="text-lg font-bold text-foreground mb-1">Website Editor</h2>
+        <p className="text-xs font-medium text-muted-foreground">Select a section to edit manually</p>
       </div>
       
-      <div className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-3">
+      <div className="flex-1 overflow-y-auto py-5 px-3">
+        <ul className="space-y-1.5">
           {sections.map((section) => (
             <li key={section.id}>
               <button
                 onClick={() => onSelectSection(section.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
                   activeSection === section.id
-                    ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white font-medium shadow-sm"
-                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                    ? "bg-primary/10 text-primary font-bold shadow-sm"
+                    : "text-muted-foreground font-semibold hover:bg-muted hover:text-foreground"
                 }`}
               >
-                <span className="text-lg">{section.icon}</span>
+                <span className={`text-xl ${activeSection === section.id ? "" : "opacity-70"}`}>
+                  {section.icon}
+                </span>
                 {section.label}
               </button>
             </li>
@@ -49,17 +51,17 @@ export default function EditorSidebar({ activeSection, onSelectSection, onSave, 
         </ul>
       </div>
 
-      <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+      <div className="p-5 border-t border-border space-y-3 bg-card/50">
         <button
           onClick={onSave}
           disabled={isSaving}
-          className="w-full py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-sm"
+          className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-hover transition-all disabled:opacity-50 shadow-md shadow-primary/20 active:scale-[0.98]"
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
         <button
           onClick={() => router.push('/dashboard/templates')}
-          className="w-full py-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg font-medium hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+          className="w-full py-3.5 bg-background border-2 border-border text-foreground rounded-xl font-bold hover:border-primary/50 hover:bg-primary/5 transition-all active:scale-[0.98]"
         >
           Change Template
         </button>

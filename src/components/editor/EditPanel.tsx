@@ -32,12 +32,12 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
   }
 
   return (
-    <div className="flex-1 p-5 overflow-y-auto">
-      <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6 capitalize">
+    <div className="flex-1 p-6 overflow-y-auto bg-background">
+      <h3 className="text-xl font-bold text-foreground mb-6 capitalize border-b border-border pb-4">
         {activeSection === "theme" ? "Theme Settings" : `${activeSection} Section`}
       </h3>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {activeSection === "hero" && (
           <>
             <InputField label="Name" value={content.hero.name} onChange={(v) => handleChange("name", v)} />
@@ -49,18 +49,22 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
         {activeSection === "about" && (
           <>
             <InputField label="Title" value={content.about.title} onChange={(v) => handleChange("title", v)} />
-            <TextAreaField label="Content" value={content.about.content} onChange={(v) => handleChange("content", v)} rows={6} />
+            <TextAreaField label="Content" value={content.about.content} onChange={(v) => handleChange("content", v)} rows={8} />
           </>
         )}
 
         {activeSection === "experience" && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             {content.experience.map((exp, idx) => (
-              <div key={idx} className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 space-y-3">
+              <div key={idx} className="p-5 bg-card rounded-xl border border-border space-y-4 shadow-sm">
+                <div className="flex justify-between items-center mb-2">
+                  <h4 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Experience {idx + 1}</h4>
+                </div>
                 <InputField label="Role" value={exp.role} onChange={(v) => handleArrayChange(idx, "role", v)} />
-                <InputField label="Company" value={exp.company} onChange={(v) => handleArrayChange(idx, "company", v)} />
-                <InputField label="Period" value={exp.period} onChange={(v) => handleArrayChange(idx, "period", v)} />
-                {/* For highlights, we keep it simple as a text area separated by newlines for this MVP editor */}
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField label="Company" value={exp.company} onChange={(v) => handleArrayChange(idx, "company", v)} />
+                  <InputField label="Period" value={exp.period} onChange={(v) => handleArrayChange(idx, "period", v)} />
+                </div>
                 <TextAreaField 
                   label="Highlights (one per line)" 
                   value={exp.highlights.join("\n")} 
@@ -73,8 +77,11 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
         )}
 
         {activeSection === "skills" && (
-          <div className="text-sm text-zinc-500">
-            Skills editing requires complex array manipulation. For now, use the AI Prompt below to edit skills (e.g., "Add React to my skills").
+          <div className="p-4 bg-primary/10 rounded-xl border border-primary/20 text-sm font-medium text-primary flex items-start gap-3">
+            <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>Skills editing requires complex array manipulation. For now, use the AI Prompt panel below to edit skills (e.g., "Add React to my skills").</p>
           </div>
         )}
 
@@ -88,13 +95,20 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
         )}
 
         {activeSection === "theme" && (
-          <>
-            <ColorField label="Primary Color" value={theme.primaryColor} onChange={(v) => handleChange("primaryColor", v)} />
-            <ColorField label="Secondary Color" value={theme.secondaryColor} onChange={(v) => handleChange("secondaryColor", v)} />
-            <ColorField label="Background Color" value={theme.backgroundColor} onChange={(v) => handleChange("backgroundColor", v)} />
-            <ColorField label="Text Color" value={theme.textColor} onChange={(v) => handleChange("textColor", v)} />
-            <InputField label="Font Family" value={theme.fontFamily} onChange={(v) => handleChange("fontFamily", v)} />
-          </>
+          <div className="space-y-6">
+            <div className="p-5 bg-card rounded-xl border border-border space-y-5 shadow-sm">
+              <h4 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-2">Colors</h4>
+              <ColorField label="Primary Color" value={theme.primaryColor} onChange={(v) => handleChange("primaryColor", v)} />
+              <ColorField label="Secondary Color" value={theme.secondaryColor} onChange={(v) => handleChange("secondaryColor", v)} />
+              <ColorField label="Background Color" value={theme.backgroundColor} onChange={(v) => handleChange("backgroundColor", v)} />
+              <ColorField label="Text Color" value={theme.textColor} onChange={(v) => handleChange("textColor", v)} />
+            </div>
+            
+            <div className="p-5 bg-card rounded-xl border border-border space-y-4 shadow-sm">
+              <h4 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-2">Typography</h4>
+              <InputField label="Font Family" value={theme.fontFamily} onChange={(v) => handleChange("fontFamily", v)} />
+            </div>
+          </div>
         )}
       </div>
     </div>
@@ -105,12 +119,12 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
 function InputField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
+      <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-2 text-sm bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-md focus:ring-2 focus:ring-blue-500 dark:text-white"
+        className="w-full p-2.5 text-sm bg-card border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary text-foreground outline-none transition-colors"
       />
     </div>
   )
@@ -119,12 +133,12 @@ function InputField({ label, value, onChange }: { label: string; value: string; 
 function TextAreaField({ label, value, onChange, rows = 3 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
+      <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</label>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
-        className="w-full p-2 text-sm bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-md focus:ring-2 focus:ring-blue-500 dark:text-white resize-none"
+        className="w-full p-2.5 text-sm bg-card border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary text-foreground outline-none resize-y transition-colors leading-relaxed"
       />
     </div>
   )
@@ -133,19 +147,21 @@ function TextAreaField({ label, value, onChange, rows = 3 }: { label: string; va
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
-      <div className="flex gap-2 items-center">
-        <input
-          type="color"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="h-8 w-8 rounded cursor-pointer border-0 p-0"
-        />
+      <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</label>
+      <div className="flex gap-3 items-center">
+        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border shadow-sm shrink-0">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="absolute inset-[-10px] w-16 h-16 cursor-pointer border-0 p-0"
+          />
+        </div>
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 p-2 text-sm bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-md uppercase font-mono dark:text-white"
+          className="flex-1 p-2.5 text-sm bg-card border border-border rounded-lg uppercase font-mono text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-colors"
         />
       </div>
     </div>

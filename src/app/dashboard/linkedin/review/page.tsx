@@ -163,12 +163,14 @@ export default function LinkedInReviewPage() {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-12">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-zinc-200 dark:bg-zinc-800 rounded w-1/3" />
-          <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-2/3" />
-          <div className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded" />
-          <div className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded" />
+      <div className="min-h-[calc(100vh-73px)] bg-background">
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-border rounded w-1/3" />
+            <div className="h-4 bg-border rounded w-2/3" />
+            <div className="h-32 bg-card border border-border rounded-xl" />
+            <div className="h-32 bg-card border border-border rounded-xl" />
+          </div>
         </div>
       </div>
     )
@@ -176,380 +178,388 @@ export default function LinkedInReviewPage() {
 
   if (!profile) {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-12 text-center">
-        <p className="text-zinc-500 mb-4">{error || "No profile data found."}</p>
-        <Link
-          href="/dashboard/linkedin"
-          className="text-sm font-medium px-4 py-2 rounded-lg bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
-          Upload LinkedIn PDF
-        </Link>
+      <div className="min-h-[calc(100vh-73px)] bg-background flex flex-col items-center justify-center">
+        <div className="max-w-md mx-auto px-6 py-12 text-center bg-card rounded-2xl border border-border shadow-sm p-10">
+          <p className="text-muted-foreground mb-6">{error || "No profile data found."}</p>
+          <Link
+            href="/dashboard/linkedin"
+            className="text-sm font-bold px-6 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md transition-all active:scale-[0.98]"
+          >
+            Upload LinkedIn PDF
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-12">
-      <Link
-        href="/dashboard"
-        className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white mb-8"
-      >
-        ← Back to Dashboard
-      </Link>
+    <div className="min-h-[calc(100vh-73px)] bg-background">
+      <div className="max-w-3xl mx-auto px-6 py-12 pb-32">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground mb-8 transition-colors"
+        >
+          ← Back to Dashboard
+        </Link>
 
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Review Your Profile</h1>
-          <p className="text-zinc-500 dark:text-zinc-400">
-            Review and edit the data extracted from your LinkedIn PDF. All fields are editable.
-          </p>
-        </div>
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50">
-          <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
-        </div>
-      )}
-
-      {/* Basic Info Section */}
-      <section className="mb-8">
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <span className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold">1</span>
-          Basic Information
-        </h2>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4">
+        <div className="flex items-start justify-between mb-8">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={profile.name}
-              onChange={(e) => updateField("name", e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-              id="input-name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-              Headline
-            </label>
-            <input
-              type="text"
-              value={profile.headline}
-              onChange={(e) => updateField("headline", e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-              id="input-headline"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-              Location
-            </label>
-            <input
-              type="text"
-              value={profile.location}
-              onChange={(e) => updateField("location", e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-              id="input-location"
-            />
+            <h1 className="text-3xl font-bold mb-2 text-foreground">Review Your Profile</h1>
+            <p className="text-muted-foreground text-sm">
+              Review and edit the data extracted from your LinkedIn PDF. All fields are editable.
+            </p>
           </div>
         </div>
-      </section>
 
-      {/* Summary Section */}
-      <section className="mb-8">
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <span className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold">2</span>
-          Summary
-        </h2>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
-          <textarea
-            value={profile.summary}
-            onChange={(e) => updateField("summary", e.target.value)}
-            rows={5}
-            className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y"
-            id="input-summary"
-          />
-        </div>
-      </section>
+        {/* Error */}
+        {error && (
+          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100">
+            <p className="text-sm font-medium text-red-600">{error}</p>
+          </div>
+        )}
 
-      {/* Skills Section */}
-      <section className="mb-8">
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <span className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold">3</span>
-          Skills
-        </h2>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
-          <div className="flex flex-wrap gap-2 mb-4">
-            {profile.skills.map((skill, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
-              >
-                {skill}
-                <button
-                  onClick={() => removeSkill(i)}
-                  className="text-zinc-400 hover:text-red-500 transition-colors"
-                  aria-label={`Remove ${skill}`}
+        {/* Basic Info Section */}
+        <section className="mb-8">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-3 text-foreground">
+            <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-black">1</span>
+            Basic Information
+          </h2>
+          <div className="rounded-2xl border border-border bg-card shadow-sm p-6 space-y-5">
+            <div>
+              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={profile.name}
+                onChange={(e) => updateField("name", e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                id="input-name"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                Headline
+              </label>
+              <input
+                type="text"
+                value={profile.headline}
+                onChange={(e) => updateField("headline", e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                id="input-headline"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                Location
+              </label>
+              <input
+                type="text"
+                value={profile.location}
+                onChange={(e) => updateField("location", e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                id="input-location"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Summary Section */}
+        <section className="mb-8">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-3 text-foreground">
+            <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-black">2</span>
+            Summary
+          </h2>
+          <div className="rounded-2xl border border-border bg-card shadow-sm p-6">
+            <textarea
+              value={profile.summary}
+              onChange={(e) => updateField("summary", e.target.value)}
+              rows={5}
+              className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm resize-y transition-colors leading-relaxed"
+              id="input-summary"
+            />
+          </div>
+        </section>
+
+        {/* Skills Section */}
+        <section className="mb-8">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-3 text-foreground">
+            <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-black">3</span>
+            Skills
+          </h2>
+          <div className="rounded-2xl border border-border bg-card shadow-sm p-6">
+            <div className="flex flex-wrap gap-2 mb-6">
+              {profile.skills.map((skill, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold bg-muted text-muted-foreground border border-border"
                 >
-                  ×
-                </button>
-              </span>
-            ))}
-            {profile.skills.length === 0 && (
-              <p className="text-sm text-zinc-400">No skills added yet.</p>
-            )}
+                  {skill}
+                  <button
+                    onClick={() => removeSkill(i)}
+                    className="text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-md p-0.5 transition-colors"
+                    aria-label={`Remove ${skill}`}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+              {profile.skills.length === 0 && (
+                <p className="text-sm font-medium text-muted-foreground">No skills added yet.</p>
+              )}
+            </div>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+                placeholder="Add a skill..."
+                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                id="input-new-skill"
+              />
+              <button
+                onClick={addSkill}
+                className="px-6 py-3 rounded-lg border-2 border-border bg-card text-foreground font-bold text-sm hover:border-primary/50 hover:bg-primary/5 transition-colors shadow-sm"
+                id="btn-add-skill"
+              >
+                Add
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
-              placeholder="Add a skill..."
-              className="flex-1 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-              id="input-new-skill"
-            />
+        </section>
+
+        {/* Experience Section */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold flex items-center gap-3 text-foreground">
+              <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-black">4</span>
+              Experience <span className="text-muted-foreground ml-1 font-medium">({profile.experience.length})</span>
+            </h2>
             <button
-              onClick={addSkill}
-              className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-              id="btn-add-skill"
+              onClick={addExperience}
+              className="text-sm font-bold text-primary hover:text-primary-hover transition-colors"
+              id="btn-add-experience"
             >
-              Add
+              + Add Entry
             </button>
           </div>
-        </div>
-      </section>
+          <div className="space-y-6">
+            {profile.experience.map((exp, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-border bg-card shadow-sm p-6 relative overflow-hidden"
+              >
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/20"></div>
+                <div className="flex items-start justify-between mb-5 pl-2">
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    Experience {i + 1}
+                  </span>
+                  <button
+                    onClick={() => removeExperience(i)}
+                    className="text-xs font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition-colors"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2 pl-2">
+                  <div>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                      Company
+                    </label>
+                    <input
+                      type="text"
+                      value={exp.company}
+                      onChange={(e) =>
+                        updateExperience(i, "company", e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={exp.title}
+                      onChange={(e) =>
+                        updateExperience(i, "title", e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                      Date Range
+                    </label>
+                    <input
+                      type="text"
+                      value={exp.dateRange}
+                      onChange={(e) =>
+                        updateExperience(i, "dateRange", e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={exp.location}
+                      onChange={(e) =>
+                        updateExperience(i, "location", e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                    />
+                  </div>
+                </div>
+                <div className="mt-5 pl-2">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                    Description
+                  </label>
+                  <textarea
+                    value={exp.description}
+                    onChange={(e) =>
+                      updateExperience(i, "description", e.target.value)
+                    }
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm resize-y transition-colors leading-relaxed"
+                  />
+                </div>
+              </div>
+            ))}
+            {profile.experience.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-border p-10 text-center bg-card/50">
+                <p className="text-sm font-medium text-muted-foreground">No experience entries.</p>
+              </div>
+            )}
+          </div>
+        </section>
 
-      {/* Experience Section */}
-      <section className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <span className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold">4</span>
-            Experience ({profile.experience.length})
-          </h2>
-          <button
-            onClick={addExperience}
-            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-            id="btn-add-experience"
-          >
-            + Add Entry
-          </button>
-        </div>
-        <div className="space-y-4">
-          {profile.experience.map((exp, i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5"
+        {/* Education Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold flex items-center gap-3 text-foreground">
+              <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-black">5</span>
+              Education <span className="text-muted-foreground ml-1 font-medium">({profile.education.length})</span>
+            </h2>
+            <button
+              onClick={addEducation}
+              className="text-sm font-bold text-primary hover:text-primary-hover transition-colors"
+              id="btn-add-education"
             >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">
-                  Experience {i + 1}
+              + Add Entry
+            </button>
+          </div>
+          <div className="space-y-6">
+            {profile.education.map((edu, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-border bg-card shadow-sm p-6 relative overflow-hidden"
+              >
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/20"></div>
+                <div className="flex items-start justify-between mb-5 pl-2">
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    Education {i + 1}
+                  </span>
+                  <button
+                    onClick={() => removeEducation(i)}
+                    className="text-xs font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition-colors"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2 pl-2">
+                  <div>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                      School / Institution
+                    </label>
+                    <input
+                      type="text"
+                      value={edu.school}
+                      onChange={(e) =>
+                        updateEducation(i, "school", e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                      Degree / Field of Study
+                    </label>
+                    <input
+                      type="text"
+                      value={edu.degree}
+                      onChange={(e) =>
+                        updateEducation(i, "degree", e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm transition-colors"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            {profile.education.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-border p-10 text-center bg-card/50">
+                <p className="text-sm font-medium text-muted-foreground">No education entries.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Generate CTA */}
+        <section className="mb-8">
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-8 text-center shadow-sm">
+            <h3 className="font-bold text-xl mb-2 text-foreground">Ready to generate your website?</h3>
+            <p className="text-sm font-medium text-muted-foreground mb-6">
+              AI will transform your profile data into polished, professional website copy.
+            </p>
+            <Link
+              href="/dashboard/generate"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm text-primary-foreground bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+              id="btn-generate-content"
+            >
+              ✨ Generate Website Content →
+            </Link>
+          </div>
+        </section>
+
+        {/* Action Bar */}
+        <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <div className="max-w-3xl mx-auto flex items-center justify-between">
+            <Link
+              href="/dashboard/linkedin"
+              className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+            >
+              Re-upload PDF
+            </Link>
+            
+            <div className="flex items-center gap-4">
+              {saved && (
+                <span className="text-sm text-green-600 font-bold bg-green-50 px-3 py-1 rounded-lg">
+                  ✓ Saved
                 </span>
-                <button
-                  onClick={() => removeExperience(i)}
-                  className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                >
-                  Remove
-                </button>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    value={exp.company}
-                    onChange={(e) =>
-                      updateExperience(i, "company", e.target.value)
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    value={exp.title}
-                    onChange={(e) =>
-                      updateExperience(i, "title", e.target.value)
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
-                    Date Range
-                  </label>
-                  <input
-                    type="text"
-                    value={exp.dateRange}
-                    onChange={(e) =>
-                      updateExperience(i, "dateRange", e.target.value)
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    value={exp.location}
-                    onChange={(e) =>
-                      updateExperience(i, "location", e.target.value)
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-                  />
-                </div>
-              </div>
-              <div className="mt-3">
-                <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={exp.description}
-                  onChange={(e) =>
-                    updateExperience(i, "description", e.target.value)
+              )}
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className={`
+                  px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-md
+                  ${saving
+                    ? "bg-muted text-muted-foreground cursor-not-allowed shadow-none"
+                    : "bg-card text-foreground border-2 border-border hover:border-primary/50 hover:bg-primary/5 active:scale-[0.98]"
                   }
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm resize-y"
-                />
-              </div>
+                `}
+                id="btn-save"
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </button>
             </div>
-          ))}
-          {profile.experience.length === 0 && (
-            <div className="rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center">
-              <p className="text-sm text-zinc-500">No experience entries.</p>
-            </div>
-          )}
+          </div>
         </div>
-      </section>
-
-      {/* Education Section */}
-      <section className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <span className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold">5</span>
-            Education ({profile.education.length})
-          </h2>
-          <button
-            onClick={addEducation}
-            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-            id="btn-add-education"
-          >
-            + Add Entry
-          </button>
-        </div>
-        <div className="space-y-4">
-          {profile.education.map((edu, i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">
-                  Education {i + 1}
-                </span>
-                <button
-                  onClick={() => removeEducation(i)}
-                  className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                >
-                  Remove
-                </button>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
-                    School / Institution
-                  </label>
-                  <input
-                    type="text"
-                    value={edu.school}
-                    onChange={(e) =>
-                      updateEducation(i, "school", e.target.value)
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
-                    Degree / Field of Study
-                  </label>
-                  <input
-                    type="text"
-                    value={edu.degree}
-                    onChange={(e) =>
-                      updateEducation(i, "degree", e.target.value)
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-          {profile.education.length === 0 && (
-            <div className="rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center">
-              <p className="text-sm text-zinc-500">No education entries.</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Generate CTA */}
-      <section className="mb-8">
-        <div className="rounded-xl border border-violet-200 dark:border-violet-900/50 bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 p-6 text-center">
-          <h3 className="font-semibold text-lg mb-2">Ready to generate your website?</h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-            AI will transform your profile data into polished, professional website copy.
-          </p>
-          <Link
-            href="/dashboard/generate"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-violet-500/25 transition-all duration-200 hover:shadow-xl hover:shadow-violet-500/30 hover:-translate-y-0.5"
-            id="btn-generate-content"
-          >
-            ✨ Generate Website Content →
-          </Link>
-        </div>
-      </section>
-
-      {/* Action Bar */}
-      <div className="sticky bottom-0 bg-white dark:bg-black border-t border-zinc-200 dark:border-zinc-800 -mx-6 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className={`
-              px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200
-              ${saving
-                ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600 cursor-not-allowed"
-                : "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-              }
-            `}
-            id="btn-save"
-          >
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-          {saved && (
-            <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-              ✓ Changes saved
-            </span>
-          )}
-        </div>
-
-        <Link
-          href="/dashboard/linkedin"
-          className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-        >
-          Re-upload PDF
-        </Link>
       </div>
     </div>
   )

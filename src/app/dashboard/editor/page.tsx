@@ -89,7 +89,7 @@ export default function EditorPage() {
   if (!content || !theme) return <div className="flex h-screen items-center justify-center">No content found. Generate it first.</div>
 
   return (
-    <div className="flex h-[calc(100vh-73px)] w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex h-[calc(100vh-73px)] w-full overflow-hidden bg-background">
       {/* Left Sidebar: Navigation */}
       <EditorSidebar 
         activeSection={activeSection} 
@@ -99,15 +99,25 @@ export default function EditorPage() {
       />
 
       {/* Center: Live Preview */}
-      <div className="flex-1 overflow-y-auto bg-zinc-200 dark:bg-zinc-900 p-4 relative shadow-inner">
+      <div className="flex-1 overflow-y-auto bg-muted/30 p-8 relative shadow-inner">
         {/* Scale container to simulate desktop view on smaller screens if needed */}
-        <div className="w-full max-w-[1200px] mx-auto bg-white min-h-[800px] shadow-2xl rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 transition-all">
-          <LivePreview content={content} theme={theme} templateId={templateId} />
+        <div className="w-full max-w-[1200px] mx-auto min-h-[800px] shadow-2xl rounded-2xl overflow-hidden border border-border transition-all bg-card relative">
+          <div className="absolute top-0 left-0 right-0 h-8 bg-muted/80 border-b border-border flex items-center px-4 gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-400"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+            <div className="w-3 h-3 rounded-full bg-green-400"></div>
+            <div className="mx-auto bg-background border border-border rounded-md px-3 py-0.5 text-xs text-muted-foreground font-mono">
+              localhost:3000
+            </div>
+          </div>
+          <div className="pt-8 h-full">
+            <LivePreview content={content} theme={theme} templateId={templateId} />
+          </div>
         </div>
       </div>
 
       {/* Right Sidebar: Editor & AI */}
-      <div className="w-96 flex flex-col bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 overflow-y-auto shadow-[-4px_0_15px_rgba(0,0,0,0.05)]">
+      <div className="w-[400px] flex flex-col bg-card border-l border-border overflow-y-auto shadow-[-4px_0_15px_rgba(0,0,0,0.05)] shrink-0">
         <EditPanel 
           activeSection={activeSection} 
           content={content} 
