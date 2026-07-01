@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import type { WebsiteContent } from "@/types/website"
 
 type PageStatus = "loading" | "empty" | "generating" | "ready" | "error"
@@ -13,6 +14,7 @@ export default function GenerateContentPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [editingSection, setEditingSection] = useState<string | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     fetchContent()
@@ -66,8 +68,9 @@ export default function GenerateContentPage() {
         body: JSON.stringify({ content }),
       })
       if (!res.ok) throw new Error("Failed to save")
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+      
+      // Redirect to choose templates
+      router.push("/dashboard/templates")
     } catch {
       setError("Failed to save changes")
     } finally {
@@ -479,13 +482,8 @@ export default function GenerateContentPage() {
             `}
             id="btn-save-edits"
           >
-            {saving ? "Saving..." : "Save Edits"}
+            {saving ? "Saving..." : "Save & Choose Template →"}
           </button>
-          {saved && (
-            <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-              ✓ Saved
-            </span>
-          )}
         </div>
 
         <Link
