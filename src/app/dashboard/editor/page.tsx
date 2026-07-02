@@ -16,6 +16,7 @@ export default function EditorPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [content, setContent] = useState<WebsiteContent | null>(null)
+  const [aiContent, setAiContent] = useState<WebsiteContent | null>(null)
   const [theme, setTheme] = useState<TemplateTheme | null>(null)
   const [templateId, setTemplateId] = useState<string>("modern-minimal")
   
@@ -27,14 +28,23 @@ export default function EditorPage() {
     async function fetchData() {
       try {
         const res = await fetch("/api/website")
-        if (!res.ok) throw new Error("Failed to load website")
+        if (res.status === 404) {
+          // No website yet, gracefully handle it
+          setIsLoading(false)
+          return
+        }
+        if (!res.ok) {
+          setIsLoading(false)
+          return
+        }
         const data = await res.json()
         
         setContent(data.content)
+        setAiContent(data.aiContent)
         setTheme(data.themeSettings)
         if (data.templateId) setTemplateId(data.templateId)
       } catch (err) {
-        console.error(err)
+        // Ignore network errors gracefully
       } finally {
         setIsLoading(false)
       }
@@ -85,8 +95,54 @@ export default function EditorPage() {
     }
   }
 
+  const handleRevert = () => {
+    if (aiContent) {
+      if (content && theme) {
+        setHistory((prev) => [...prev, { content, theme }])
+      }
+      setContent(aiContent)
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      setIsLoading(true)
+      const res = await fetch("/api/website", {
+        method: "DELETE",
+      })
+      if (!res.ok) throw new Error("Failed to delete website")
+      router.push("/dashboard")
+    } catch (err) {
+      console.error(err)
+      alert("Error deleting website.")
+      setIsLoading(false)
+    }
+  }
+
   if (isLoading) return <div className="flex h-screen items-center justify-center">Loading editor...</div>
-  if (!content || !theme) return <div className="flex h-screen items-center justify-center">No content found. Generate it first.</div>
+  if (!content || !theme) {
+    return (
+      <div className="flex flex-col h-[calc(100vh-73px)] items-center justify-center bg-background">
+        <div className="text-center p-12 bg-card rounded-3xl shadow-xl border border-border max-w-md w-full mx-4">
+          <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-foreground mb-2">No Website Found</h2>
+          <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
+            You haven't generated your website yet. Head over to the dashboard to upload your profile and generate your content.
+          </p>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="w-full px-6 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-[calc(100vh-73px)] w-full overflow-hidden bg-background">
@@ -96,6 +152,8 @@ export default function EditorPage() {
         onSelectSection={setActiveSection} 
         onSave={handleSave}
         isSaving={isSaving}
+        onRevert={aiContent ? handleRevert : undefined}
+        onDelete={handleDelete}
       />
 
       {/* Center: Live Preview */}

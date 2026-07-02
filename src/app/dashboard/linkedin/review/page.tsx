@@ -161,6 +161,30 @@ export default function LinkedInReviewPage() {
     })
   }
 
+  const handleClearAll = async () => {
+    if (!profile) return
+    if (
+      !confirm(
+        "Are you sure you want to clear all details? This will delete your imported profile data."
+      )
+    ) {
+      return
+    }
+    
+    try {
+      setSaving(true)
+      const res = await fetch("/api/linkedin/profile", {
+        method: "DELETE",
+      })
+      if (!res.ok) throw new Error("Failed to delete profile")
+      router.push("/dashboard")
+      router.refresh()
+    } catch {
+      setError("Failed to clear profile. Please try again.")
+      setSaving(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-73px)] bg-background">
@@ -209,6 +233,13 @@ export default function LinkedInReviewPage() {
               Review and edit the data extracted from your LinkedIn PDF. All fields are editable.
             </p>
           </div>
+          <button
+            onClick={handleClearAll}
+            className="text-sm font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+            title="Remove all details"
+          >
+            Clear All
+          </button>
         </div>
 
         {/* Error */}
@@ -518,7 +549,7 @@ export default function LinkedInReviewPage() {
               AI will transform your profile data into polished, professional website copy.
             </p>
             <Link
-              href="/dashboard/generate"
+              href="/dashboard/generate?auto=true"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm text-primary-foreground bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
               id="btn-generate-content"
             >

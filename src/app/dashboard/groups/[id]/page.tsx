@@ -68,7 +68,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
     <div className="max-w-4xl mx-auto px-6 py-12">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white mb-8"
+        className="inline-flex items-center gap-2 text-base font-medium text-zinc-500 hover:text-zinc-900 mb-8 transition-colors"
       >
         ← Back to Dashboard
       </Link>
@@ -95,15 +95,17 @@ export default async function GroupPage({ params }: GroupPageProps) {
       </div>
 
       {/* Invite Code Card */}
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 mb-8">
-        <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 mb-8 shadow-sm">
+        <h2 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">
           Invite Code
         </h2>
         <div className="flex items-center gap-4">
-          <span className="text-2xl font-mono font-bold tracking-widest text-zinc-900 dark:text-white">
-            {group.inviteCode}
-          </span>
-          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+          <div className="bg-zinc-50 border border-zinc-200 px-5 py-3 rounded-lg">
+            <span className="text-2xl font-mono font-bold tracking-widest text-zinc-800 select-all">
+              {group.inviteCode}
+            </span>
+          </div>
+          <span className="text-sm text-zinc-500">
             Share this code with people you want to invite
           </span>
         </div>
@@ -138,10 +140,10 @@ export default async function GroupPage({ params }: GroupPageProps) {
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                  className={`text-xs font-semibold px-3 py-1 rounded-full border ${
                     member.role === "admin"
-                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                      : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : "bg-zinc-50 text-zinc-600 border-zinc-200"
                   }`}
                 >
                   {member.role}

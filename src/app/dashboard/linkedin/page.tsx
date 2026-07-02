@@ -100,22 +100,22 @@ export default function LinkedInUploadPage() {
     <div className="max-w-2xl mx-auto px-6 py-12">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white mb-8"
+        className="inline-flex items-center gap-2 text-base font-medium text-zinc-500 hover:text-zinc-900 mb-8 transition-colors"
       >
         ← Back to Dashboard
       </Link>
 
-      <h1 className="text-3xl font-bold mb-2">Import LinkedIn Profile</h1>
-      <p className="text-zinc-500 dark:text-zinc-400 mb-8">
+      <h1 className="text-3xl font-bold mb-2 text-zinc-900">Import LinkedIn Profile</h1>
+      <p className="text-zinc-500 mb-8 font-medium">
         Upload your LinkedIn PDF export and we&apos;ll extract your profile data automatically.
       </p>
 
       {/* Instructions */}
-      <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/30 p-5 mb-8">
-        <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 mb-8 shadow-sm">
+        <h3 className="font-bold text-blue-900 mb-2">
           How to download your LinkedIn PDF
         </h3>
-        <ol className="text-sm text-blue-800 dark:text-blue-400 space-y-1.5 list-decimal list-inside">
+        <ol className="text-sm text-blue-800 font-medium space-y-1.5 list-decimal list-inside">
           <li>Go to your LinkedIn profile page</li>
           <li>Click the <strong>&quot;More&quot;</strong> button (next to &quot;Open to&quot;)</li>
           <li>Select <strong>&quot;Save to PDF&quot;</strong></li>
@@ -130,15 +130,15 @@ export default function LinkedInUploadPage() {
         onDragLeave={handleDragLeave}
         onClick={() => fileInputRef.current?.click()}
         className={`
-          relative rounded-xl border-2 border-dashed p-12 text-center cursor-pointer
-          transition-all duration-200 ease-in-out
+          relative rounded-2xl border-2 border-dashed p-12 text-center cursor-pointer bg-white
+          transition-all duration-200 ease-in-out shadow-sm
           ${isDragOver
-            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 scale-[1.02]"
+            ? "border-primary bg-primary/5 scale-[1.02]"
             : file
-              ? "border-green-400 bg-green-50 dark:bg-green-950/20"
-              : "border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+              ? "border-green-500 bg-green-50"
+              : "border-zinc-300 hover:border-primary hover:bg-zinc-50"
           }
-          ${status === "error" ? "border-red-400 bg-red-50 dark:bg-red-950/20" : ""}
+          ${status === "error" ? "border-red-500 bg-red-50" : ""}
         `}
       >
         <input
@@ -150,17 +150,16 @@ export default function LinkedInUploadPage() {
           id="pdf-upload-input"
         />
 
-        {/* Icon */}
         <div className="mb-4">
           {file && status !== "error" ? (
-            <div className="w-14 h-14 mx-auto rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
-              <svg className="w-7 h-7 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="w-14 h-14 mx-auto rounded-full bg-green-100 flex items-center justify-center">
+              <svg className="w-7 h-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           ) : (
-            <div className="w-14 h-14 mx-auto rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-              <svg className="w-7 h-7 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="w-14 h-14 mx-auto rounded-full bg-zinc-100 flex items-center justify-center">
+              <svg className="w-7 h-7 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
             </div>
@@ -170,19 +169,19 @@ export default function LinkedInUploadPage() {
         {/* Text */}
         {file ? (
           <div>
-            <p className="font-medium text-green-700 dark:text-green-400">
+            <p className="font-bold text-green-700">
               {file.name}
             </p>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-sm font-medium text-zinc-500 mt-1">
               {(file.size / 1024).toFixed(1)} KB · Click to change file
             </p>
           </div>
         ) : (
           <div>
-            <p className="font-medium text-zinc-700 dark:text-zinc-300">
+            <p className="font-bold text-zinc-700">
               Drop your LinkedIn PDF here, or click to browse
             </p>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-sm font-medium text-zinc-500 mt-1">
               PDF files only, up to 5MB
             </p>
           </div>
@@ -191,8 +190,8 @@ export default function LinkedInUploadPage() {
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="mt-4 p-4 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50">
-          <p className="text-sm text-red-700 dark:text-red-400">{errorMessage}</p>
+        <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 shadow-sm">
+          <p className="text-sm font-bold text-red-700">{errorMessage}</p>
         </div>
       )}
 
@@ -202,10 +201,10 @@ export default function LinkedInUploadPage() {
           onClick={handleUpload}
           disabled={!file || status === "uploading" || status === "success"}
           className={`
-            px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200
+            px-8 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 shadow-md
             ${!file || status === "uploading" || status === "success"
-              ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600 cursor-not-allowed"
-              : "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+              ? "bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none"
+              : "bg-primary text-white hover:bg-primary-hover shadow-primary/20"
             }
           `}
           id="upload-button"
@@ -243,9 +242,14 @@ export default function LinkedInUploadPage() {
 
       {/* Success Message */}
       {status === "success" && (
-        <div className="mt-6 p-4 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50">
-          <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-            ✓ Profile data extracted successfully! Redirecting to review page...
+        <div className="mt-6 p-4 rounded-xl bg-green-50 border border-green-200 shadow-sm flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p className="text-sm text-green-800 font-bold">
+            Profile data extracted successfully! Redirecting to review page...
           </p>
         </div>
       )}

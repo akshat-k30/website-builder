@@ -50,19 +50,19 @@ export default function JoinGroupPage() {
     <div className="max-w-lg mx-auto px-6 py-12">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white mb-8"
+        className="inline-flex items-center gap-2 text-base font-medium text-zinc-500 hover:text-zinc-900 mb-8 transition-colors"
       >
         ← Back to Dashboard
       </Link>
-      <h1 className="text-2xl font-bold mb-2">Join a Group</h1>
-      <p className="text-zinc-500 dark:text-zinc-400 mb-8">
+      <h1 className="text-3xl font-bold mb-2 text-zinc-900">Join a Group</h1>
+      <p className="text-zinc-500 mb-8">
         Enter the invite code shared by your group admin to join.
       </p>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
             htmlFor="invite-code"
-            className="block text-sm font-medium mb-1"
+            className="block text-sm font-bold text-zinc-700 mb-1.5"
           >
             Invite Code
           </label>
@@ -73,14 +73,14 @@ export default function JoinGroupPage() {
             required
             maxLength={6}
             placeholder="e.g., ABC123"
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-center text-lg font-mono tracking-widest uppercase focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white"
+            className="w-full rounded-lg border border-zinc-300 bg-white text-zinc-900 px-3 py-3 text-center text-xl font-mono tracking-widest uppercase focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors shadow-sm"
           />
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="w-full rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-50 transition-colors shadow-md shadow-primary/20"
         >
           {loading ? "Joining..." : "Join Group"}
         </button>

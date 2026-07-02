@@ -8,6 +8,8 @@ interface EditorSidebarProps {
   onSelectSection: (section: SectionType) => void
   onSave: () => void
   isSaving: boolean
+  onRevert?: () => void
+  onDelete?: () => void
 }
 
 const sections: { id: SectionType; label: string; icon: string }[] = [
@@ -19,7 +21,7 @@ const sections: { id: SectionType; label: string; icon: string }[] = [
   { id: "theme", label: "Theme & Design", icon: "🎨" },
 ]
 
-export default function EditorSidebar({ activeSection, onSelectSection, onSave, isSaving }: EditorSidebarProps) {
+export default function EditorSidebar({ activeSection, onSelectSection, onSave, isSaving, onRevert, onDelete }: EditorSidebarProps) {
   const router = useRouter()
 
   return (
@@ -65,6 +67,30 @@ export default function EditorSidebar({ activeSection, onSelectSection, onSave, 
         >
           Change Template
         </button>
+        {onRevert && (
+          <button
+            onClick={() => {
+              if (confirm("Are you sure you want to reset all text back to the original AI generated version? This will undo all manual edits.")) {
+                onRevert();
+              }
+            }}
+            className="w-full py-3 text-sm text-red-600 font-semibold hover:text-red-700 hover:underline transition-all"
+          >
+            Reset to AI Original
+          </button>
+        )}
+        {onDelete && (
+          <button
+            onClick={() => {
+              if (confirm("WARNING: Are you sure you want to completely delete your website? This will ALSO delete all of your imported LinkedIn data, and you will have to start over from scratch.")) {
+                onDelete();
+              }
+            }}
+            className="w-full py-2 text-xs text-red-400 font-semibold hover:text-red-600 hover:underline transition-all mt-4 border-t border-border pt-4"
+          >
+            Delete Entire Website
+          </button>
+        )}
       </div>
     </div>
   )

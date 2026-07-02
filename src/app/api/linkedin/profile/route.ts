@@ -107,3 +107,37 @@ export async function PUT(request: Request) {
     )
   }
 }
+
+// DELETE /api/linkedin/profile — delete the current user's profile data
+export async function DELETE() {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    })
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    // Delete associated website content if it exists
+    await prisma.website.deleteMany({
+      where: { userId: user.id },
+    })
+
+    await prisma.linkedInProfile.delete({
+      where: { userId: user.id },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("Delete LinkedIn profile error:", error)
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    )
+  }
+}

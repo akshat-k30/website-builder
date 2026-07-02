@@ -68,12 +68,33 @@ export default async function DashboardPage() {
               Manage your groups and website from here.
             </p>
           </div>
-          <Link
-            href="/dashboard/generate"
-            className="bg-primary hover:bg-primary-hover text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm flex items-center gap-2"
-          >
-            <span>+</span> New Website
-          </Link>
+          {linkedinProfile ? (
+            <Link
+              href={website ? "/dashboard/editor" : "/dashboard/generate"}
+              className="bg-primary hover:bg-primary-hover text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm flex items-center gap-2"
+            >
+              {website ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                  Edit Website
+                </>
+              ) : (
+                <>
+                  <span>+</span> New Website
+                </>
+              )}
+            </Link>
+          ) : (
+            <button
+              disabled
+              className="bg-muted text-muted-foreground px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm flex items-center gap-2 opacity-60 cursor-not-allowed"
+              title="Upload LinkedIn profile first"
+            >
+              <span>+</span> New Website
+            </button>
+          )}
         </div>
 
         {/* Quick Actions (Stats style cards) */}
@@ -131,30 +152,47 @@ export default async function DashboardPage() {
             </div>
           </Link>
 
-          <Link
-            href="/dashboard/generate"
-            className={`bg-card rounded-2xl border border-border p-6 flex flex-col gap-4 transition-colors shadow-sm ${
-              linkedinProfile ? "hover:border-primary/50" : "opacity-60 cursor-not-allowed"
-            }`}
-          >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${website ? "bg-yellow-500/10 text-yellow-500" : "bg-primary/10 text-primary"}`}>
-              {website ? (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              ) : (
+          {linkedinProfile ? (
+            <Link
+              href={website ? "/dashboard/editor" : "/dashboard/generate"}
+              className="bg-card rounded-2xl border border-border p-6 flex flex-col gap-4 transition-colors shadow-sm hover:border-primary/50"
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${website ? "bg-yellow-500/10 text-yellow-500" : "bg-primary/10 text-primary"}`}>
+                {website ? (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                )}
+              </div>
+              <div>
+                <h2 className="font-bold text-foreground mb-1">{website ? "Website Ready" : "Generate"}</h2>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {website ? "AI content generated. Click to edit." : "Use AI to create copy."}
+                </p>
+              </div>
+            </Link>
+          ) : (
+            <div 
+              className="bg-card rounded-2xl border border-border p-6 flex flex-col gap-4 shadow-sm opacity-60 cursor-not-allowed"
+              title="Upload LinkedIn profile first"
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 text-primary">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                 </svg>
-              )}
+              </div>
+              <div>
+                <h2 className="font-bold text-foreground mb-1">Generate</h2>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Upload LinkedIn profile first.
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-bold text-foreground mb-1">{website ? "Website Ready" : "Generate"}</h2>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {website ? "AI content generated. Click to edit." : "Use AI to create copy."}
-              </p>
-            </div>
-          </Link>
+          )}
         </div>
 
         {/* Groups List */}

@@ -11,6 +11,17 @@ interface EditPanelProps {
   onUpdate: (section: SectionType, data: any) => void
 }
 
+const FONT_OPTIONS = [
+  { label: "Inter (Modern Sans)", value: "Inter, sans-serif" },
+  { label: "Roboto (Clean Sans)", value: "Roboto, sans-serif" },
+  { label: "Open Sans (Friendly Sans)", value: "'Open Sans', sans-serif" },
+  { label: "Montserrat (Geometric Sans)", value: "Montserrat, sans-serif" },
+  { label: "Poppins (Rounded Sans)", value: "Poppins, sans-serif" },
+  { label: "Playfair Display (Elegant Serif)", value: "'Playfair Display', serif" },
+  { label: "Merriweather (Classic Serif)", value: "Merriweather, serif" },
+  { label: "System Default", value: "system-ui, -apple-system, sans-serif" },
+]
+
 export default function EditPanel({ activeSection, content, theme, onUpdate }: EditPanelProps) {
   
   const handleChange = (field: string, value: any) => {
@@ -106,7 +117,12 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
             
             <div className="p-5 bg-card rounded-xl border border-border space-y-4 shadow-sm">
               <h4 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-2">Typography</h4>
-              <InputField label="Font Family" value={theme.fontFamily} onChange={(v) => handleChange("fontFamily", v)} />
+              <SelectField 
+                label="Font Family" 
+                value={theme.fontFamily} 
+                options={FONT_OPTIONS}
+                onChange={(v) => handleChange("fontFamily", v)} 
+              />
             </div>
           </div>
         )}
@@ -163,6 +179,36 @@ function ColorField({ label, value, onChange }: { label: string; value: string; 
           onChange={(e) => onChange(e.target.value)}
           className="flex-1 p-2.5 text-sm bg-card border border-border rounded-lg uppercase font-mono text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-colors"
         />
+      </div>
+    </div>
+  )
+}
+
+function SelectField({ label, value, options, onChange }: { label: string; value: string; options: {label: string, value: string}[]; onChange: (v: string) => void }) {
+  // Ensure the current value is in the options list so it doesn't appear blank
+  const currentOptionExists = options.some(opt => opt.value === value)
+  const displayOptions = currentOptionExists 
+    ? options 
+    : [{ label: `Custom (${value})`, value }, ...options]
+
+  return (
+    <div>
+      <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</label>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full p-2.5 pr-10 text-sm bg-card border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary text-foreground outline-none transition-colors appearance-none cursor-pointer"
+        >
+          {displayOptions.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
       </div>
     </div>
   )
