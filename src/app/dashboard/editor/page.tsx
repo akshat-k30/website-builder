@@ -19,6 +19,8 @@ export default function EditorPage() {
   const [aiContent, setAiContent] = useState<WebsiteContent | null>(null)
   const [theme, setTheme] = useState<TemplateTheme | null>(null)
   const [templateId, setTemplateId] = useState<string>("modern-minimal")
+  const [websiteStatus, setWebsiteStatus] = useState<string>("draft")
+  const [publishedUrl, setPublishedUrl] = useState<string | null>(null)
   
   // AI Undo history
   const [history, setHistory] = useState<{ content: WebsiteContent; theme: TemplateTheme }[]>([])
@@ -43,6 +45,8 @@ export default function EditorPage() {
         setAiContent(data.aiContent)
         setTheme(data.themeSettings)
         if (data.templateId) setTemplateId(data.templateId)
+        setWebsiteStatus(data.status || "draft")
+        setPublishedUrl(data.publishedUrl || null)
       } catch (err) {
         // Ignore network errors gracefully
       } finally {
@@ -154,6 +158,8 @@ export default function EditorPage() {
         isSaving={isSaving}
         onRevert={aiContent ? handleRevert : undefined}
         onDelete={handleDelete}
+        websiteStatus={websiteStatus}
+        publishedUrl={publishedUrl}
       />
 
       {/* Center: Live Preview */}

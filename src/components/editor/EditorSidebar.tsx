@@ -10,6 +10,8 @@ interface EditorSidebarProps {
   isSaving: boolean
   onRevert?: () => void
   onDelete?: () => void
+  websiteStatus?: string
+  publishedUrl?: string | null
 }
 
 const sections: { id: SectionType; label: string; icon: string }[] = [
@@ -21,7 +23,7 @@ const sections: { id: SectionType; label: string; icon: string }[] = [
   { id: "theme", label: "Theme & Design", icon: "🎨" },
 ]
 
-export default function EditorSidebar({ activeSection, onSelectSection, onSave, isSaving, onRevert, onDelete }: EditorSidebarProps) {
+export default function EditorSidebar({ activeSection, onSelectSection, onSave, isSaving, onRevert, onDelete, websiteStatus, publishedUrl }: EditorSidebarProps) {
   const router = useRouter()
 
   return (
@@ -53,6 +55,24 @@ export default function EditorSidebar({ activeSection, onSelectSection, onSave, 
         </ul>
       </div>
 
+      {/* Published Site Link */}
+      {websiteStatus === "published" && publishedUrl && (
+        <div className="px-5 pt-4 pb-2 border-t border-border">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-xs font-bold text-green-600">Live</span>
+          </div>
+          <a
+            href={publishedUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-primary font-semibold hover:underline break-all leading-relaxed block mb-2"
+          >
+            {publishedUrl}
+          </a>
+        </div>
+      )}
+
       <div className="p-5 border-t border-border space-y-3 bg-card/50">
         <button
           onClick={onSave}
@@ -60,6 +80,20 @@ export default function EditorSidebar({ activeSection, onSelectSection, onSave, 
           className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-hover transition-all disabled:opacity-50 shadow-md shadow-primary/20 active:scale-[0.98]"
         >
           {isSaving ? "Saving..." : "Save Changes"}
+        </button>
+        <button
+          onClick={async () => {
+            // Auto-save before navigating to publish
+            onSave()
+            router.push('/dashboard/publish')
+          }}
+          className="w-full py-3.5 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-md shadow-green-500/20 active:scale-[0.98] flex items-center justify-center gap-2"
+        >
+          {websiteStatus === "published" ? (
+            <>🔄 Republish</>
+          ) : (
+            <>🚀 Publish</>
+          )}
         </button>
         <button
           onClick={() => router.push('/dashboard/templates')}
@@ -95,3 +129,4 @@ export default function EditorSidebar({ activeSection, onSelectSection, onSave, 
     </div>
   )
 }
+
