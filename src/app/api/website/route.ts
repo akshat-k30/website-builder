@@ -31,6 +31,9 @@ export async function GET() {
       templateId: website.templateId,
       themeSettings: JSON.parse(website.themeSettings),
       status: website.status,
+      subdomain: website.subdomain,
+      publishedUrl: website.publishedUrl,
+      publishedAt: website.publishedAt,
     })
   } catch (error) {
     console.error("Get website error:", error)
