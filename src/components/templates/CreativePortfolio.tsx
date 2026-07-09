@@ -32,7 +32,17 @@ export default function CreativePortfolio({ content, theme }: TemplateProps) {
         </header>
 
         {/* Hero */}
-        <section className="py-32 md:py-48 text-center max-w-5xl mx-auto">
+        <section className="py-32 md:py-48 text-center max-w-5xl mx-auto flex flex-col items-center">
+          {content.hero.photoUrl && (
+            <div className="mb-12">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={content.hero.photoUrl} 
+                alt={content.hero.name}
+                className="w-32 h-40 md:w-48 md:h-64 object-cover rounded-t-[100px] rounded-b-[20px] shadow-2xl"
+              />
+            </div>
+          )}
           <p className="text-sm uppercase tracking-[0.4em] font-bold mb-10 opacity-70" style={{ color: theme.secondaryColor }}>
             Welcome to my portfolio
           </p>

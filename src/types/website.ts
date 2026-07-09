@@ -2,6 +2,7 @@ export interface HeroSection {
   name: string
   tagline: string
   ctaText: string
+  photoUrl?: string
 }
 
 export interface AboutSection {

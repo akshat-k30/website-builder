@@ -40,7 +40,7 @@ export default function ExecutivePro({ content, theme }: TemplateProps) {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-40 pb-20 px-6 max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
+      <section className="pt-40 pb-20 px-6 max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12 md:gap-24">
         <div className="flex-1 space-y-8">
           <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-2" style={{ backgroundColor: `${theme.primaryColor}15`, color: theme.primaryColor }}>
             Executive Portfolio
@@ -61,6 +61,19 @@ export default function ExecutivePro({ content, theme }: TemplateProps) {
             </a>
           </div>
         </div>
+        
+        {content.hero.photoUrl && (
+          <div className="w-48 h-48 md:w-80 md:h-80 shrink-0 relative">
+            <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-3xl" style={{ backgroundColor: theme.primaryColor }}></div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={content.hero.photoUrl} 
+              alt={content.hero.name}
+              className="w-full h-full object-cover rounded-3xl relative z-10 border-4 shadow-xl"
+              style={{ borderColor: theme.backgroundColor }}
+            />
+          </div>
+        )}
       </section>
 
       {/* About / Executive Summary */}

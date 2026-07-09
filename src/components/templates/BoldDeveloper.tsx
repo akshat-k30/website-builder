@@ -39,6 +39,18 @@ export default function BoldDeveloper({ content, theme }: TemplateProps) {
       {/* Hero */}
       <section className="px-8 md:px-12 py-20 md:py-32 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
         <div>
+          {content.hero.photoUrl && (
+            <div className="mb-8 inline-block relative">
+              <div className="absolute inset-0 blur-lg opacity-50" style={{ backgroundColor: theme.primaryColor }}></div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={content.hero.photoUrl} 
+                alt={content.hero.name}
+                className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover relative z-10 border-2"
+                style={{ borderColor: theme.primaryColor }}
+              />
+            </div>
+          )}
           <div className="inline-block px-4 py-2 rounded font-bold text-sm mb-8" style={{ backgroundColor: `${theme.primaryColor}20`, color: theme.primaryColor }}>
             {content.about.title}
           </div>

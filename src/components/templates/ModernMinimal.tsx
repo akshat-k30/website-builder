@@ -35,16 +35,30 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
       {/* Hero */}
       <section className="px-8 py-32 md:py-48 max-w-6xl mx-auto text-center md:text-left flex flex-col md:flex-row items-center gap-16 relative">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-20 pointer-events-none" style={{ backgroundColor: theme.primaryColor }}></div>
-        <div className="flex-1 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.15]">
-            {content.hero.tagline}
-          </h1>
-          <button 
-            className="px-10 py-4 rounded-full text-white font-bold text-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all"
-            style={{ backgroundColor: theme.primaryColor }}
-          >
-            {content.hero.ctaText}
-          </button>
+        <div className="flex-1 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both flex flex-col md:flex-row items-center md:items-start gap-8">
+          {content.hero.photoUrl && (
+            <div className="shrink-0 relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={content.hero.photoUrl} 
+                alt={content.hero.name}
+                className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover shadow-2xl border-4"
+                style={{ borderColor: theme.backgroundColor }}
+              />
+              <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none"></div>
+            </div>
+          )}
+          <div className="text-center md:text-left">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.15]">
+              {content.hero.tagline}
+            </h1>
+            <button 
+              className="px-10 py-4 rounded-full text-white font-bold text-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all"
+              style={{ backgroundColor: theme.primaryColor }}
+            >
+              {content.hero.ctaText}
+            </button>
+          </div>
         </div>
       </section>
 

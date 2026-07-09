@@ -51,6 +51,7 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
       <div className="space-y-5">
         {activeSection === "hero" && (
           <>
+            <ImageUploadField label="Profile Photo" value={content.hero.photoUrl || ""} onChange={(v) => handleChange("photoUrl", v)} />
             <InputField label="Name" value={content.hero.name} onChange={(v) => handleChange("name", v)} />
             <TextAreaField label="Tagline" value={content.hero.tagline} onChange={(v) => handleChange("tagline", v)} />
             <InputField label="Button Text" value={content.hero.ctaText} onChange={(v) => handleChange("ctaText", v)} />
@@ -210,6 +211,70 @@ function SelectField({ label, value, options, onChange }: { label: string; value
           </svg>
         </div>
       </div>
+    </div>
+  )
+}
+
+function ImageUploadField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Ensure it's an image
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file.")
+      return
+    }
+
+    // Convert to base64 Data URL
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string
+      onChange(base64String)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  return (
+    <div>
+      <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</label>
+      
+      {value ? (
+        <div className="flex items-start gap-4 p-4 border border-border rounded-xl bg-card">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src={value} 
+            alt="Profile Preview" 
+            className="w-16 h-16 rounded-full object-cover border border-border shadow-sm shrink-0" 
+          />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-foreground mb-1">Photo uploaded</p>
+            <p className="text-xs text-muted-foreground mb-3">This photo will appear on your generated website.</p>
+            <button
+              onClick={() => onChange("")}
+              className="text-xs font-bold text-red-500 hover:text-red-600 px-3 py-1.5 rounded bg-red-50 hover:bg-red-100 transition-colors"
+            >
+              Remove Photo
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="relative border-2 border-dashed border-border rounded-xl bg-muted/30 p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors group cursor-pointer">
+          <input 
+            type="file" 
+            accept="image/*"
+            onChange={handleFileChange}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+          <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+          </div>
+          <p className="text-sm font-semibold text-foreground mb-1">Click to upload photo</p>
+          <p className="text-xs text-muted-foreground">JPEG, PNG, or WebP</p>
+        </div>
+      )}
     </div>
   )
 }
