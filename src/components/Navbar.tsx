@@ -39,6 +39,12 @@ export default function Navbar() {
               My Website
             </Link>
             <Link
+              href="/directory"
+              className="text-sm font-medium px-4 py-2 rounded-lg text-foreground hover:bg-muted transition-colors"
+            >
+              Directory
+            </Link>
+            <Link
               href="/dashboard/groups/create"
               className="text-sm font-medium px-4 py-2 rounded-lg text-foreground hover:bg-muted transition-colors"
             >

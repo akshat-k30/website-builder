@@ -111,6 +111,36 @@ export default async function GroupPage({ params }: GroupPageProps) {
         </div>
       </div>
 
+      {/* Public Directory Link */}
+      <div className="rounded-xl border border-zinc-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 mb-8 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-zinc-900">Public Directory</h2>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                Showcase all published member websites in one place
+              </p>
+            </div>
+          </div>
+          <a
+            href={`/directory/${group.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            View Directory
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
       {/* Members List */}
       <div>
         <h2 className="text-lg font-semibold mb-4">
