@@ -7,7 +7,7 @@ function SuccessContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const url = searchParams.get("url") || ""
-  const subdomain = searchParams.get("subdomain") || ""
+  const _subdomain = searchParams.get("subdomain") || ""
   const [copied, setCopied] = useState(false)
   const [showConfetti, setShowConfetti] = useState(true)
 
@@ -63,34 +63,30 @@ function SuccessContent() {
       {/* Confetti particles */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 30 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-bounce"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `-${Math.random() * 20 + 5}%`,
-                animationDuration: `${Math.random() * 3 + 2}s`,
-                animationDelay: `${Math.random() * 1}s`,
-                opacity: Math.random() * 0.7 + 0.3,
-              }}
-            >
+          {Array.from({ length: 30 }).map((_, i) => {
+            const CONFETTI_COLORS = ["#4361ee", "#f72585", "#4cc9f0", "#7209b7", "#f77f00", "#06d6a0"]
+            return (
               <div
-                className="w-3 h-3 rounded-sm"
+                key={i}
+                className="absolute animate-bounce"
                 style={{
-                  backgroundColor: [
-                    "#4361ee",
-                    "#f72585",
-                    "#4cc9f0",
-                    "#7209b7",
-                    "#f77f00",
-                    "#06d6a0",
-                  ][Math.floor(Math.random() * 6)],
-                  transform: `rotate(${Math.random() * 360}deg)`,
+                  left: `${(i * 37 + 13) % 100}%`,
+                  top: `-${(i * 7 + 5) % 20 + 5}%`,
+                  animationDuration: `${(i % 3) + 2}s`,
+                  animationDelay: `${(i % 10) * 0.1}s`,
+                  opacity: ((i * 3) % 7 + 3) / 10,
                 }}
-              ></div>
-            </div>
-          ))}
+              >
+                <div
+                  className="w-3 h-3 rounded-sm"
+                  style={{
+                    backgroundColor: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+                    transform: `rotate(${(i * 47) % 360}deg)`,
+                  }}
+                ></div>
+              </div>
+            )
+          })}
         </div>
       )}
 

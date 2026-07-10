@@ -3,14 +3,15 @@
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import dynamic from "next/dynamic"
+import type { ComponentType } from "react"
 
 // Dynamically import templates to avoid huge bundles
-const ModernMinimal = dynamic(() => import("@/components/templates/ModernMinimal"), { ssr: false })
-const BoldDeveloper = dynamic(() => import("@/components/templates/BoldDeveloper"), { ssr: false })
-const CreativePortfolio = dynamic(() => import("@/components/templates/CreativePortfolio"), { ssr: false })
-const ExecutivePro = dynamic(() => import("@/components/templates/ExecutivePro"), { ssr: false })
-
-import type { ComponentType } from "react"
+const templateMap: Record<string, ComponentType<{ content: WebsiteContent; theme: TemplateTheme }>> = {
+  "modern-minimal": dynamic(() => import("@/components/templates/ModernMinimal"), { ssr: false }),
+  "bold-developer": dynamic(() => import("@/components/templates/BoldDeveloper"), { ssr: false }),
+  "creative-portfolio": dynamic(() => import("@/components/templates/CreativePortfolio"), { ssr: false }),
+  "executive-pro": dynamic(() => import("@/components/templates/ExecutivePro"), { ssr: false }),
+}
 
 interface LivePreviewProps {
   content: WebsiteContent
@@ -19,16 +20,7 @@ interface LivePreviewProps {
 }
 
 export default function LivePreview({ content, theme, templateId }: LivePreviewProps) {
-  // Select the right component based on templateId
-  let TemplateComponent: ComponentType<{ content: WebsiteContent; theme: TemplateTheme }> = ModernMinimal as any
-  
-  if (templateId === "bold-developer") {
-    TemplateComponent = BoldDeveloper as any
-  } else if (templateId === "creative-portfolio") {
-    TemplateComponent = CreativePortfolio as any
-  } else if (templateId === "executive-pro") {
-    TemplateComponent = ExecutivePro as any
-  }
+  const TemplateComponent = templateMap[templateId] || templateMap["modern-minimal"]
 
   return (
     <div className="w-full h-full overflow-y-auto">

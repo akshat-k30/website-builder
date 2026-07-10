@@ -36,7 +36,7 @@ function getAvatarColor(name: string) {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
 }
 
-export default function DirectorySearch({ members, groupName }: DirectorySearchProps) {
+export default function DirectorySearch({ members }: DirectorySearchProps) {
   const [query, setQuery] = useState("")
 
   const filtered = useMemo(() => {

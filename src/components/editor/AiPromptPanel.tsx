@@ -87,7 +87,7 @@ export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo
         </button>
       </div>
       <p className="text-xs font-semibold text-muted-foreground mt-3">
-        Try: "Change colors to dark mode" or "Rewrite the about section"
+        Try: &ldquo;Change colors to dark mode&rdquo; or &ldquo;Rewrite the about section&rdquo;
       </p>
     </div>
   )

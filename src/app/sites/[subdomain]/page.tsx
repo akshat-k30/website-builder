@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import PublishedSiteRenderer from "@/components/PublishedSiteRenderer"
+import Link from "next/link"
 
 interface PageProps {
   params: Promise<{ subdomain: string }>
@@ -29,7 +30,6 @@ export default async function PublishedSitePage({ params }: PageProps) {
       content={content}
       theme={themeSettings}
       templateId={templateId}
-      userName={website.user.name}
     />
   )
 }
@@ -52,7 +52,7 @@ function SiteNotFound({ subdomain }: { subdomain: string }) {
           The website at <span className="font-semibold text-slate-700">&quot;{subdomain}&quot;</span> doesn&apos;t exist or has been unpublished by its owner.
         </p>
 
-        <a
+        <Link
           href="/"
           className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-lg"
         >
@@ -60,7 +60,7 @@ function SiteNotFound({ subdomain }: { subdomain: string }) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           Build Your Own Website
-        </a>
+        </Link>
 
         <p className="mt-8 text-xs text-slate-400 font-medium">
           Powered by WebsiteBuilder

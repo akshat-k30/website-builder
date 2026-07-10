@@ -59,6 +59,7 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { content, templateId, themeSettings } = body
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {}
     if (content) updateData.userEditedContent = JSON.stringify(content)
     if (templateId) updateData.templateId = templateId
@@ -79,7 +80,7 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(_request: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {

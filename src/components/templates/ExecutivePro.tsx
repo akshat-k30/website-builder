@@ -81,7 +81,7 @@ export default function ExecutivePro({ content, theme }: TemplateProps) {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h2 className="text-3xl font-bold" style={{ color: theme.primaryColor }}>{content.about.title}</h2>
           <p className="text-xl md:text-2xl leading-relaxed font-medium opacity-90">
-            "{content.about.content}"
+            &ldquo;{content.about.content}&rdquo;
           </p>
         </div>
       </section>

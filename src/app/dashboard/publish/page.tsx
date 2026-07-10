@@ -17,9 +17,9 @@ export default function PublishPage() {
 
   // Current publish state
   const [currentStatus, setCurrentStatus] = useState<string>("draft")
-  const [currentSubdomain, setCurrentSubdomain] = useState<string | null>(null)
+  const [_currentSubdomain, setCurrentSubdomain] = useState<string | null>(null)
   const [currentUrl, setCurrentUrl] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string>("")
+  const [_userName, setUserName] = useState<string>("")
 
   // Load current website state
   useEffect(() => {

@@ -47,7 +47,7 @@ export default function EditorPage() {
         if (data.templateId) setTemplateId(data.templateId)
         setWebsiteStatus(data.status || "draft")
         setPublishedUrl(data.publishedUrl || null)
-      } catch (err) {
+      } catch (_err) {
         // Ignore network errors gracefully
       } finally {
         setIsLoading(false)
@@ -91,6 +91,7 @@ export default function EditorPage() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleUpdateSection = (section: SectionType, data: any) => {
     if (section === "theme") {
       setTheme(data)
@@ -135,7 +136,7 @@ export default function EditorPage() {
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">No Website Found</h2>
           <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-            You haven't generated your website yet. Head over to the dashboard to upload your profile and generate your content.
+            You haven&apos;t generated your website yet. Head over to the dashboard to upload your profile and generate your content.
           </p>
           <button
             onClick={() => router.push("/dashboard")}

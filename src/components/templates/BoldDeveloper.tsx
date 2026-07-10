@@ -98,7 +98,7 @@ developer.init();`}
       <section id="exp" className="px-8 md:px-12 py-24 border-t border-dashed" style={{ borderColor: `${textColor}20` }}>
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-black mb-16 tracking-tighter">
-            System.Log(<span style={{ color: theme.primaryColor }}>"Experience"</span>)
+            System.Log(<span style={{ color: theme.primaryColor }}>&ldquo;Experience&rdquo;</span>)
           </h2>
           <div className="space-y-8">
             {content.experience.map((exp, idx) => (

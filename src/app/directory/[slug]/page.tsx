@@ -280,16 +280,14 @@ export default async function DirectoryPage({ params }: PageProps) {
           letterSpacing: "0.03em",
         }}>
           Powered by{" "}
-          <a
-            href="/"
+          <span
             style={{
               color: "#4361ee",
-              textDecoration: "none",
               fontWeight: 700,
             }}
           >
             WebsiteBuilder
-          </a>
+          </span>
         </p>
       </div>
     </div>

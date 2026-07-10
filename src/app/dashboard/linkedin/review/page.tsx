@@ -28,25 +28,25 @@ export default function LinkedInReviewPage() {
   const [newSkill, setNewSkill] = useState("")
 
   useEffect(() => {
-    fetchProfile()
-  }, [])
-
-  const fetchProfile = async () => {
-    try {
-      const res = await fetch("/api/linkedin/profile")
-      if (res.status === 404) {
-        router.push("/dashboard/linkedin")
-        return
+    async function fetchProfile() {
+      try {
+        const res = await fetch("/api/linkedin/profile")
+        if (res.status === 404) {
+          router.push("/dashboard/linkedin")
+          return
+        }
+        if (!res.ok) throw new Error("Failed to load profile")
+        const data = await res.json()
+        setProfile(data.profile)
+      } catch {
+        setError("Failed to load profile data. Please try uploading again.")
+      } finally {
+        setLoading(false)
       }
-      if (!res.ok) throw new Error("Failed to load profile")
-      const data = await res.json()
-      setProfile(data.profile)
-    } catch {
-      setError("Failed to load profile data. Please try uploading again.")
-    } finally {
-      setLoading(false)
     }
-  }
+    fetchProfile()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSave = async () => {
     if (!profile) return

@@ -238,7 +238,7 @@ export default async function DashboardPage() {
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">No groups yet</h3>
               <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
-                You haven't joined any groups yet. Create a new group to collaborate with others or join an existing one using an invite code.
+                You haven&apos;t joined any groups yet. Create a new group to collaborate with others or join an existing one using an invite code.
               </p>
               <div className="flex items-center justify-center gap-4">
                 <Link
