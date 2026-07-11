@@ -34,6 +34,7 @@ export async function GET() {
       subdomain: website.subdomain,
       publishedUrl: website.publishedUrl,
       publishedAt: website.publishedAt,
+      cloudfrontDomain: process.env.CLOUDFRONT_DOMAIN || null,
     })
   } catch (error) {
     console.error("Get website error:", error)

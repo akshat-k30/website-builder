@@ -19,6 +19,7 @@ export default function PublishPage() {
   const [currentStatus, setCurrentStatus] = useState<string>("draft")
   const [_currentSubdomain, setCurrentSubdomain] = useState<string | null>(null)
   const [currentUrl, setCurrentUrl] = useState<string | null>(null)
+  const [cloudfrontDomain, setCloudfrontDomain] = useState<string | null>(null)
   const [_userName, setUserName] = useState<string>("")
 
   // Load current website state
@@ -34,6 +35,7 @@ export default function PublishPage() {
         setCurrentStatus(data.status)
         setCurrentSubdomain(data.subdomain)
         setCurrentUrl(data.publishedUrl)
+        setCloudfrontDomain(data.cloudfrontDomain)
 
         // Pre-fill subdomain from current or from user's name
         if (data.subdomain) {
@@ -236,7 +238,7 @@ export default function PublishPage() {
           <div className="rounded-xl border-2 border-border focus-within:border-primary/50 bg-background transition-colors overflow-hidden">
             <div className="flex items-center">
               <span className="px-4 py-4 text-sm text-muted-foreground font-mono bg-muted/50 border-r border-border whitespace-nowrap select-none">
-                {baseUrl}/sites/
+                {cloudfrontDomain ? `${cloudfrontDomain}/` : `${baseUrl}/sites/`}
               </span>
               <input
                 type="text"
