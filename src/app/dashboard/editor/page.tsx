@@ -138,12 +138,20 @@ export default function EditorPage() {
           <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
             You haven&apos;t generated your website yet. Head over to the dashboard to upload your profile and generate your content.
           </p>
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="w-full px-6 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all"
-          >
-            Return to Dashboard
-          </button>
+          <div className="flex flex-col gap-3 w-full">
+            <button
+              onClick={() => router.push("/dashboard/linkedin")}
+              className="w-full px-6 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all"
+            >
+              Start LinkedIn Import
+            </button>
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="w-full px-6 py-3.5 bg-card border-2 border-border text-foreground font-bold rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all"
+            >
+              Return to Dashboard
+            </button>
+          </div>
         </div>
       </div>
     )

@@ -39,3 +39,18 @@ body {
   font-family: 'Inter', Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* Ensure all buttons have the pointer cursor by default */
+@layer base {
+  button, 
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    cursor: pointer !important;
+  }
+
+  button:disabled,
+  input:disabled {
+    cursor: not-allowed !important;
+  }
+}
