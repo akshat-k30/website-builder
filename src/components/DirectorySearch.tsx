@@ -9,6 +9,7 @@ interface DirectoryMember {
   subdomain: string
   templateId: string
   tagline: string
+  cloudfrontDomain?: string | null
 }
 
 interface DirectorySearchProps {
@@ -314,7 +315,7 @@ function MemberCard({ member, color }: { member: DirectoryMember; color: { bg: s
 
       {/* Visit Button */}
       <a
-        href={`/sites/${member.subdomain}`}
+        href={member.cloudfrontDomain ? `${member.cloudfrontDomain}/${member.subdomain}` : `/sites/${member.subdomain}`}
         target="_blank"
         rel="noreferrer"
         style={{

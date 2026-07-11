@@ -92,6 +92,7 @@ export default async function DirectoryPage({ params }: PageProps) {
         subdomain: website.subdomain!,
         templateId: website.templateId || "modern-minimal",
         tagline: content?.hero?.tagline || "",
+        cloudfrontDomain: process.env.CLOUDFRONT_DOMAIN || null,
       }
     })
 
