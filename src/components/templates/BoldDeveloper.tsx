@@ -1,4 +1,3 @@
-"use client"
 
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"

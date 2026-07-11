@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { generateStaticHtml } from "@/lib/generateStaticHtml"
 
 // Validate subdomain format: 3-30 chars, lowercase alphanumeric + hyphens, no leading/trailing hyphens
 function isValidSubdomain(subdomain: string): boolean {
@@ -68,9 +70,54 @@ export async function POST(request: Request) {
       )
     }
 
-    // Build the published URL
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
-    const publishedUrl = `${baseUrl}/sites/${normalizedSubdomain}`
+    // Build the published URL and upload to S3 if configured
+    let publishedUrl = ""
+    const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN
+    const bucketName = process.env.AWS_S3_BUCKET_NAME
+
+    if (
+      process.env.AWS_ACCESS_KEY_ID &&
+      process.env.AWS_SECRET_ACCESS_KEY &&
+      bucketName &&
+      cloudfrontDomain
+    ) {
+      // 1. Prepare data for HTML generation
+      const content = user.website.userEditedContent
+        ? JSON.parse(user.website.userEditedContent)
+        : JSON.parse(user.website.aiGeneratedContent)
+      
+      const themeSettings = JSON.parse(user.website.themeSettings || "{}")
+      const templateId = user.website.templateId || "modern-minimal"
+
+      // 2. Generate Static HTML
+      const htmlString = generateStaticHtml(content, themeSettings, templateId)
+
+      // 3. Upload to S3
+      const s3Client = new S3Client({
+        region: process.env.AWS_REGION || "us-east-1",
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        },
+      })
+
+      const objectKey = `${normalizedSubdomain}/index.html`
+
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: bucketName,
+          Key: objectKey,
+          Body: htmlString,
+          ContentType: "text/html",
+        })
+      )
+
+      publishedUrl = `${cloudfrontDomain.replace(/\/$/, "")}/${normalizedSubdomain}/index.html`
+    } else {
+      // Fallback to local Next.js routing if AWS is not configured yet
+      const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+      publishedUrl = `${baseUrl}/sites/${normalizedSubdomain}`
+    }
 
     // Update website to published
     const website = await prisma.website.update({
@@ -122,6 +169,36 @@ export async function DELETE() {
         { error: "Website is not currently published" },
         { status: 400 }
       )
+    }
+
+    // Delete from S3 if configured
+    const bucketName = process.env.AWS_S3_BUCKET_NAME
+    if (
+      process.env.AWS_ACCESS_KEY_ID &&
+      process.env.AWS_SECRET_ACCESS_KEY &&
+      bucketName &&
+      user.website.subdomain
+    ) {
+      try {
+        const s3Client = new S3Client({
+          region: process.env.AWS_REGION || "us-east-1",
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          },
+        })
+
+        const objectKey = `${user.website.subdomain}/index.html`
+        await s3Client.send(
+          new DeleteObjectCommand({
+            Bucket: bucketName,
+            Key: objectKey,
+          })
+        )
+      } catch (s3Error) {
+        console.error("Failed to delete from S3:", s3Error)
+        // We continue with database unpublish even if S3 fails
+      }
     }
 
     await prisma.website.update({
