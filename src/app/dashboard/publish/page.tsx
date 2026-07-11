@@ -291,31 +291,7 @@ export default function PublishPage() {
           </div>
         </div>
 
-        {/* Pre-publish Checklist */}
-        <div className="bg-card rounded-2xl border border-border p-8 shadow-sm mb-8">
-          <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-            <span>📋</span> Before you publish
-          </h2>
-          <div className="space-y-3">
-            {[
-              "Your hero section headline looks good",
-              "Contact information is correct",
-              "All experience entries are accurate",
-              "Skills are up to date",
-              "You've reviewed the live preview in the editor",
-            ].map((item, idx) => (
-              <label key={idx} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  className="w-4.5 h-4.5 rounded border-2 border-border text-primary accent-primary cursor-pointer"
-                />
-                <span className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors">
-                  {item}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+
 
         {/* Publish Button */}
         <button
