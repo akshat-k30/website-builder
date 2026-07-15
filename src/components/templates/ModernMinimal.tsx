@@ -90,50 +90,6 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
         html { scroll-behavior: smooth; }
       `}</style>
 
-      {/* Vanilla JS Scroll Reveal Observer */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              const init = () => {
-                const observer = new IntersectionObserver((entries, obs) => {
-                  entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                      entry.target.classList.add('is-visible');
-                      obs.unobserve(entry.target);
-                    }
-                  });
-                }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-                
-                document.querySelectorAll('.css-reveal:not(.is-visible)').forEach((el) => {
-                  observer.observe(el);
-                });
-              };
-              
-              if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-              } else {
-                init();
-              }
-
-              // For dynamic re-renders in editors (like LivePreview)
-              // We set up a MutationObserver to watch for new .css-reveal elements
-              const mutationObserver = new MutationObserver((mutations) => {
-                let shouldInit = false;
-                for (const m of mutations) {
-                  if (m.addedNodes.length > 0) {
-                    shouldInit = true;
-                    break;
-                  }
-                }
-                if (shouldInit) init();
-              });
-              mutationObserver.observe(document.body, { childList: true, subtree: true });
-            })();
-          `,
-        }}
-      />
-
       {/* Subtle noise texture overlay for premium feel */}
       <div
         style={{
