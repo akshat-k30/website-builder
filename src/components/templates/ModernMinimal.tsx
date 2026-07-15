@@ -1,5 +1,3 @@
-"use client"
-
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import Navigation from "./modern-minimal/Navigation"
@@ -34,6 +32,60 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
       />
+
+      <style>{`
+        /* Global Template Animations */
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleUp {
+          from { opacity: 0; transform: scale(0.92); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(110%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+          from { transform: translateY(-100%); }
+          to { transform: translateY(0); }
+        }
+        @keyframes orbFloat {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        @keyframes bounceSubtle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(6px); }
+        }
+        @keyframes pulseSubtle {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.3); }
+        }
+
+        .css-reveal {
+          opacity: 0;
+          animation-fill-mode: forwards;
+          animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .css-reveal-fadeUp { animation-name: fadeUp; }
+        .css-reveal-fadeIn { animation-name: fadeIn; }
+        .css-reveal-scaleUp { animation-name: scaleUp; }
+        .css-reveal-slideUp { animation-name: slideUp; }
+        .css-reveal-slideDown { animation-name: slideDown; opacity: 1; }
+
+        .css-orb { animation: orbFloat 20s infinite alternate ease-in-out; }
+        .css-bounce { animation: bounceSubtle 1.5s infinite ease-in-out; }
+        .css-pulse { animation: pulseSubtle 2s infinite ease-in-out; }
+
+        html { scroll-behavior: smooth; }
+      `}</style>
 
       {/* Subtle noise texture overlay for premium feel */}
       <div

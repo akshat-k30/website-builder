@@ -1,7 +1,4 @@
-"use client"
-
-import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import React from "react"
 import { SkillsSection as SkillsSectionType } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import ScrollReveal from "./ScrollReveal"
@@ -22,19 +19,8 @@ function SkillPill({
   theme: TemplateTheme
 }) {
   return (
-    <motion.span
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.03,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
-      whileHover={{
-        scale: 1.06,
-        backgroundColor: `${theme.primaryColor}15`,
-        borderColor: `${theme.primaryColor}30`,
-      }}
+    <span
+      className="css-reveal css-reveal-scaleUp css-skill-pill"
       style={{
         display: "inline-block",
         padding: "0.5rem 1.1rem",
@@ -47,11 +33,22 @@ function SkillPill({
         border: `1px solid ${theme.textColor}0a`,
         cursor: "default",
         letterSpacing: "-0.01em",
-        transition: "background-color 0.2s, border-color 0.2s",
+        animationDelay: `${index * 0.03}s`,
+        animationDuration: "0.4s",
       }}
     >
+      <style>{`
+        .css-skill-pill {
+          transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .css-skill-pill:hover {
+          transform: scale(1.06);
+          background-color: ${theme.primaryColor}15 !important;
+          border-color: ${theme.primaryColor}30 !important;
+        }
+      `}</style>
       {skill}
-    </motion.span>
+    </span>
   )
 }
 
@@ -66,19 +63,10 @@ function SkillCategory({
   index: number
   theme: TemplateTheme
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-10% 0px" })
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.15,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
+    <div
+      className="css-reveal css-reveal-fadeUp"
       style={{
         padding: "2rem",
         borderRadius: "20px",
@@ -86,6 +74,8 @@ function SkillCategory({
         border: `1px solid ${theme.textColor}06`,
         position: "relative",
         overflow: "hidden",
+        animationDelay: `${index * 0.15}s`,
+        animationDuration: "0.6s"
       }}
     >
       {/* Subtle gradient accent */}
@@ -125,7 +115,7 @@ function SkillCategory({
           <SkillPill key={sIdx} skill={skill} index={sIdx} theme={theme} />
         ))}
       </div>
-    </motion.div>
+    </div>
   )
 }
 

@@ -1,5 +1,3 @@
-"use client"
-
 import { AboutSection as AboutSectionType } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import ScrollReveal from "./ScrollReveal"

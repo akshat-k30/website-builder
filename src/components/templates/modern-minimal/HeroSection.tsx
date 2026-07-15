@@ -1,15 +1,10 @@
-"use client"
-
-import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef, lazy, Suspense } from "react"
 import { HeroSection as HeroSectionType } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import AnimatedText from "./AnimatedText"
 import MagneticButton from "./MagneticButton"
 import GradientOrb from "./GradientOrb"
 import { ArrowDown } from "lucide-react"
-
-const AmbientScene = lazy(() => import("./AmbientScene"))
+import AmbientScene from "./AmbientScene"
 
 interface HeroSectionProps {
   hero: HeroSectionType
@@ -17,19 +12,9 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ hero, theme }: HeroSectionProps) {
-  const sectionRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  })
-
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-  const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.95])
-  const heroY = useTransform(scrollYProgress, [0, 0.8], [0, 80])
 
   return (
     <section
-      ref={sectionRef}
       style={{
         position: "relative",
         minHeight: "100vh",
@@ -48,34 +33,31 @@ export default function HeroSection({ hero, theme }: HeroSectionProps) {
         <GradientOrb color={theme.primaryColor} size={400} x="80%" y="80%" opacity={0.06} delay={6} duration={28} />
       </div>
 
-      {/* 3D Scene — lazy loaded */}
-      <Suspense fallback={null}>
-        <AmbientScene primaryColor={theme.primaryColor} secondaryColor={theme.secondaryColor} />
-      </Suspense>
+      {/* 3D Scene replacement (CSS Ambient) */}
+      <AmbientScene primaryColor={theme.primaryColor} secondaryColor={theme.secondaryColor} />
 
       {/* Content */}
-      <motion.div
+      <div
+        className="css-reveal css-reveal-fadeIn"
         style={{
           position: "relative",
           zIndex: 10,
           textAlign: "center",
           maxWidth: "1000px",
           width: "100%",
-          opacity: heroOpacity,
-          scale: heroScale,
-          y: heroY,
+          animationDuration: "1s"
         }}
       >
         {/* Photo */}
         {hero.photoUrl && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          <div
+            className="css-reveal css-reveal-scaleUp"
             style={{
               display: "inline-block",
               marginBottom: "2.5rem",
               position: "relative",
+              animationDelay: "0.2s",
+              animationDuration: "0.8s"
             }}
           >
             {/* Glow ring */}
@@ -103,14 +85,12 @@ export default function HeroSection({ hero, theme }: HeroSectionProps) {
                 boxShadow: `0 20px 60px ${theme.primaryColor}15`,
               }}
             />
-          </motion.div>
+          </div>
         )}
 
         {/* Subtitle */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+        <div
+          className="css-reveal css-reveal-fadeUp"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -124,6 +104,7 @@ export default function HeroSection({ hero, theme }: HeroSectionProps) {
             border: `1px solid ${theme.primaryColor}15`,
             marginBottom: "2rem",
             letterSpacing: "-0.01em",
+            animationDelay: "0.4s"
           }}
         >
           <span style={{
@@ -132,7 +113,7 @@ export default function HeroSection({ hero, theme }: HeroSectionProps) {
             display: "inline-block",
           }} />
           {hero.name}
-        </motion.div>
+        </div>
 
         {/* Main headline — massive typography */}
         <div style={{ marginBottom: "2.5rem" }}>
@@ -154,23 +135,19 @@ export default function HeroSection({ hero, theme }: HeroSectionProps) {
         </div>
 
         {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 1.4 }}
-          style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}
+        <div
+          className="css-reveal css-reveal-fadeUp"
+          style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap", animationDelay: "1.4s" }}
         >
           <MagneticButton href="#contact" primaryColor={theme.primaryColor}>
             {hero.ctaText}
           </MagneticButton>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.4 }}
-        transition={{ delay: 2.5, duration: 1 }}
+      <div
+        className="css-reveal css-reveal-fadeIn"
         style={{
           position: "absolute",
           bottom: "3rem",
@@ -182,18 +159,17 @@ export default function HeroSection({ hero, theme }: HeroSectionProps) {
           gap: "0.5rem",
           color: theme.textColor,
           zIndex: 10,
+          animationDelay: "2.5s",
+          animationDuration: "1s"
         }}
       >
         <span style={{ fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.5 }}>
           Scroll
         </span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
+        <div className="css-bounce">
           <ArrowDown size={16} strokeWidth={1.5} />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   )
 }

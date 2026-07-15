@@ -1,7 +1,4 @@
-"use client"
-
-import { motion, useScroll, useMotionValueEvent } from "framer-motion"
-import { useState, useCallback } from "react"
+import React from "react"
 
 interface NavigationProps {
   name: string
@@ -18,31 +15,10 @@ const navItems = [
 ]
 
 export default function Navigation({ name, primaryColor, backgroundColor, textColor }: NavigationProps) {
-  const [hidden, setHidden] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const { scrollY } = useScroll()
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0
-    if (latest > previous && latest > 200) {
-      setHidden(true)
-    } else {
-      setHidden(false)
-    }
-    setScrolled(latest > 50)
-  })
-
-  const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault()
-    const el = document.querySelector(href)
-    if (el) el.scrollIntoView({ behavior: "smooth" })
-  }, [])
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: hidden ? -100 : 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+    <header
+      className="css-reveal css-reveal-slideDown"
       style={{
         position: "sticky",
         top: 0,
@@ -51,33 +27,26 @@ export default function Navigation({ name, primaryColor, backgroundColor, textCo
         justifyContent: "center",
         padding: "1rem 1rem 0",
         width: "100%",
+        animationDuration: "0.6s"
       }}
     >
-      <motion.nav
-        animate={{
-          backdropFilter: scrolled ? "blur(20px)" : "blur(0px)",
-          backgroundColor: scrolled ? `${backgroundColor}cc` : `${backgroundColor}00`,
-          boxShadow: scrolled
-            ? "0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)"
-            : "none",
-        }}
-        transition={{ duration: 0.3 }}
+      <nav
         style={{
           display: "flex",
           alignItems: "center",
           gap: "2.5rem",
           padding: "0.8rem 2rem",
           borderRadius: "100px",
-          border: scrolled ? `1px solid ${textColor}0a` : "1px solid transparent",
+          border: `1px solid ${textColor}0a`,
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          backgroundColor: `${backgroundColor}cc`,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)",
         }}
       >
         {/* Logo */}
         <a
           href="#"
-          onClick={(e) => {
-            e.preventDefault()
-            window.scrollTo({ top: 0, behavior: "smooth" })
-          }}
           style={{
             fontSize: "0.95rem",
             fontWeight: 700,
@@ -103,36 +72,37 @@ export default function Navigation({ name, primaryColor, backgroundColor, textCo
             @media (max-width: 768px) {
               .modern-minimal-nav-items { display: none !important; }
             }
+            .css-nav-link {
+              font-size: 0.82rem;
+              font-weight: 500;
+              opacity: 0.55;
+              text-decoration: none;
+              padding: 0.45rem 0.9rem;
+              border-radius: 100px;
+              letter-spacing: -0.01em;
+              white-space: nowrap;
+              transition: all 0.2s ease;
+            }
+            .css-nav-link:hover {
+              opacity: 1;
+              background-color: ${textColor}08;
+            }
           `}</style>
           {navItems.map((item) => (
-            <motion.a
+            <a
               key={item.href}
               href={item.href}
-              onClick={(e) => handleClick(e, item.href)}
-              style={{
-                fontSize: "0.82rem",
-                fontWeight: 500,
-                color: textColor,
-                opacity: 0.55,
-                textDecoration: "none",
-                padding: "0.45rem 0.9rem",
-                borderRadius: "100px",
-                letterSpacing: "-0.01em",
-                whiteSpace: "nowrap",
-                transition: "background-color 0.2s",
-              }}
-              whileHover={{
-                opacity: 1,
-                backgroundColor: `${textColor}08`,
-              }}
+              className="css-nav-link"
+              style={{ color: textColor }}
             >
               {item.label}
-            </motion.a>
+            </a>
           ))}
         </div>
 
         {/* CTA dot */}
-        <motion.div
+        <div
+          className="css-pulse"
           style={{
             width: 8,
             height: 8,
@@ -140,10 +110,8 @@ export default function Navigation({ name, primaryColor, backgroundColor, textCo
             backgroundColor: primaryColor,
             flexShrink: 0,
           }}
-          animate={{ scale: [1, 1.3, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
-      </motion.nav>
-    </motion.header>
+      </nav>
+    </header>
   )
 }

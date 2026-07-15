@@ -1,5 +1,3 @@
-"use client"
-
 import { TemplateTheme } from "@/lib/templates"
 import ScrollReveal from "./ScrollReveal"
 

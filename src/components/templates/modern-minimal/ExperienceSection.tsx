@@ -1,7 +1,4 @@
-"use client"
-
-import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import React from "react"
 import { ExperienceItem } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import GlassCard from "./GlassCard"
@@ -22,24 +19,18 @@ function ExperienceCard({
   index: number
   theme: TemplateTheme
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-10% 0px" })
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-      transition={{
-        duration: 0.7,
-        delay: Math.min(index * 0.12, 0.4),
-        ease: [0.25, 0.46, 0.45, 0.94],
+    <div
+      className="css-reveal css-reveal-fadeUp"
+      style={{
+        animationDelay: `${Math.min(index * 0.12, 0.4)}s`,
+        animationDuration: "0.7s"
       }}
     >
       <GlassCard
         backgroundColor={`${theme.textColor}03`}
         borderColor={`${theme.textColor}08`}
-        hoverScale={1.01}
         style={{ padding: "2.5rem" }}
       >
         {/* Header */}
@@ -138,7 +129,7 @@ function ExperienceCard({
           ))}
         </ul>
       </GlassCard>
-    </motion.div>
+    </div>
   )
 }
 

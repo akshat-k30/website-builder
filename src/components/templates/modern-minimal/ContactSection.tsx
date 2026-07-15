@@ -1,5 +1,4 @@
-"use client"
-
+import React from "react"
 import { ContactSection as ContactSectionType } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import AnimatedText from "./AnimatedText"
