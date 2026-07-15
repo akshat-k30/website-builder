@@ -74,11 +74,14 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
           animation-fill-mode: forwards;
           animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .css-reveal-fadeUp { animation-name: fadeUp; }
-        .css-reveal-fadeIn { animation-name: fadeIn; }
-        .css-reveal-scaleUp { animation-name: scaleUp; }
-        .css-reveal-slideUp { animation-name: slideUp; }
-        .css-reveal-slideDown { animation-name: slideDown; opacity: 1; }
+        .css-reveal.is-visible.css-reveal-fadeUp { animation-name: fadeUp; }
+        .css-reveal.is-visible.css-reveal-fadeIn { animation-name: fadeIn; }
+        .css-reveal.is-visible.css-reveal-scaleUp { animation-name: scaleUp; }
+        .css-reveal.is-visible.css-reveal-slideUp { animation-name: slideUp; }
+        .css-reveal.is-visible.css-reveal-slideDown { animation-name: slideDown; opacity: 1; }
+
+        /* Fallback if JS is disabled */
+        .no-js .css-reveal { opacity: 1; animation: none; }
 
         .css-orb { animation: orbFloat 20s infinite alternate ease-in-out; }
         .css-bounce { animation: bounceSubtle 1.5s infinite ease-in-out; }
@@ -86,6 +89,50 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
 
         html { scroll-behavior: smooth; }
       `}</style>
+
+      {/* Vanilla JS Scroll Reveal Observer */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              const init = () => {
+                const observer = new IntersectionObserver((entries, obs) => {
+                  entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                      entry.target.classList.add('is-visible');
+                      obs.unobserve(entry.target);
+                    }
+                  });
+                }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+                
+                document.querySelectorAll('.css-reveal:not(.is-visible)').forEach((el) => {
+                  observer.observe(el);
+                });
+              };
+              
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+              } else {
+                init();
+              }
+
+              // For dynamic re-renders in editors (like LivePreview)
+              // We set up a MutationObserver to watch for new .css-reveal elements
+              const mutationObserver = new MutationObserver((mutations) => {
+                let shouldInit = false;
+                for (const m of mutations) {
+                  if (m.addedNodes.length > 0) {
+                    shouldInit = true;
+                    break;
+                  }
+                }
+                if (shouldInit) init();
+              });
+              mutationObserver.observe(document.body, { childList: true, subtree: true });
+            })();
+          `,
+        }}
+      />
 
       {/* Subtle noise texture overlay for premium feel */}
       <div
