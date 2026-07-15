@@ -1,6 +1,14 @@
+"use client"
 
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import Navigation from "./modern-minimal/Navigation"
+import HeroSection from "./modern-minimal/HeroSection"
+import AboutSection from "./modern-minimal/AboutSection"
+import ExperienceSection from "./modern-minimal/ExperienceSection"
+import SkillsSection from "./modern-minimal/SkillsSection"
+import ContactSection from "./modern-minimal/ContactSection"
+import FooterSection from "./modern-minimal/FooterSection"
 
 interface TemplateProps {
   content: WebsiteContent
@@ -9,135 +17,95 @@ interface TemplateProps {
 
 export default function ModernMinimal({ content, theme }: TemplateProps) {
   return (
-    <div 
-      className="min-h-screen font-sans antialiased transition-colors duration-500"
+    <div
       style={{
+        minHeight: "100vh",
         backgroundColor: theme.backgroundColor,
         color: theme.textColor,
-        fontFamily: theme.fontFamily,
+        fontFamily: `'Inter', ${theme.fontFamily}`,
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+        position: "relative",
       }}
     >
-      {/* Header/Nav - Glassmorphism effect */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-opacity-70 border-b transition-colors shadow-sm" style={{ backgroundColor: `${theme.backgroundColor}dd`, borderColor: `${theme.textColor}10` }}>
-        <div className="px-8 py-5 max-w-6xl mx-auto flex justify-between items-center">
-          <div className="text-xl font-extrabold tracking-tight hover:opacity-80 transition-opacity cursor-pointer" style={{ color: theme.primaryColor }}>
-            {content.hero.name}
-          </div>
-          <nav className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest">
-            <a href="#about" className="hover:-translate-y-0.5 transition-transform opacity-60 hover:opacity-100">About</a>
-            <a href="#experience" className="hover:-translate-y-0.5 transition-transform opacity-60 hover:opacity-100">Experience</a>
-            <a href="#contact" className="hover:-translate-y-0.5 transition-transform opacity-60 hover:opacity-100">Contact</a>
-          </nav>
-        </div>
-      </header>
+      {/* Google Fonts */}
+      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
 
-      {/* Hero */}
-      <section className="px-8 py-32 md:py-48 max-w-6xl mx-auto text-center md:text-left flex flex-col md:flex-row items-center gap-16 relative">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-20 pointer-events-none" style={{ backgroundColor: theme.primaryColor }}></div>
-        <div className="flex-1 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both flex flex-col md:flex-row items-center md:items-start gap-8">
-          {content.hero.photoUrl && (
-            <div className="shrink-0 relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
-                src={content.hero.photoUrl} 
-                alt={content.hero.name}
-                className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover shadow-2xl border-4"
-                style={{ borderColor: theme.backgroundColor }}
-              />
-              <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none"></div>
-            </div>
-          )}
-          <div className="text-center md:text-left">
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.15]">
-              {content.hero.tagline}
-            </h1>
-            <button 
-              className="px-10 py-4 rounded-full text-white font-bold text-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all"
-              style={{ backgroundColor: theme.primaryColor }}
-            >
-              {content.hero.ctaText}
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* Subtle noise texture overlay for premium feel */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
+          opacity: 0.025,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "128px 128px",
+        }}
+      />
 
-      {/* About */}
-      <section id="about" className="px-8 py-32 max-w-6xl mx-auto border-t" style={{ borderColor: `${theme.textColor}10` }}>
-        <h2 className="text-xs font-black tracking-widest uppercase mb-10" style={{ color: theme.secondaryColor }}>{content.about.title}</h2>
-        <p className="text-2xl md:text-4xl leading-snug font-medium opacity-90 max-w-4xl">
-          {content.about.content}
-        </p>
-      </section>
+      {/* Floating navigation */}
+      <Navigation
+        name={content.hero.name}
+        primaryColor={theme.primaryColor}
+        backgroundColor={theme.backgroundColor}
+        textColor={theme.textColor}
+      />
 
-      {/* Experience */}
-      <section id="experience" className="px-8 py-32 max-w-6xl mx-auto border-t bg-black/5" style={{ borderColor: `${theme.textColor}10`, backgroundColor: `${theme.textColor}03` }}>
-        <h2 className="text-xs font-black tracking-widest uppercase mb-16" style={{ color: theme.secondaryColor }}>Experience</h2>
-        <div className="space-y-20">
-          {content.experience.map((exp, idx) => (
-            <div key={idx} className="flex flex-col md:flex-row gap-6 md:gap-20 group">
-              <div className="md:w-1/4 shrink-0 font-bold text-sm tracking-widest uppercase mt-2 opacity-50">
-                {exp.period}
-              </div>
-              <div className="flex-1">
-                <h3 className="text-3xl font-extrabold mb-3 group-hover:translate-x-2 transition-transform duration-300">{exp.role}</h3>
-                <div className="text-xl mb-8 font-semibold" style={{ color: theme.primaryColor }}>{exp.company}</div>
-                <ul className="space-y-4 opacity-75">
-                  {exp.highlights.map((highlight, hIdx) => (
-                    <li key={hIdx} className="leading-relaxed flex gap-4 text-lg">
-                      <span className="font-bold opacity-50" style={{ color: theme.primaryColor }}>/</span>
-                      {highlight}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Hero — full viewport */}
+      <HeroSection hero={content.hero} theme={theme} />
 
-      {/* Skills */}
-      <section className="px-8 py-32 max-w-6xl mx-auto border-t" style={{ borderColor: `${theme.textColor}10` }}>
-        <h2 className="text-xs font-black tracking-widest uppercase mb-16" style={{ color: theme.secondaryColor }}>Expertise</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-16">
-          {content.skills.categories.map((cat, idx) => (
-            <div key={idx}>
-              <h3 className="text-lg font-extrabold mb-8">{cat.name}</h3>
-              <div className="flex flex-wrap gap-3">
-                {cat.items.map((skill, sIdx) => (
-                  <span key={sIdx} className="px-5 py-2.5 rounded-full text-sm font-bold bg-black/5 dark:bg-white/5 transition-colors hover:bg-black/10 dark:hover:bg-white/10" style={{ backgroundColor: `${theme.textColor}08` }}>
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* About — large pull-quote typography */}
+      <AboutSection about={content.about} theme={theme} />
 
-      {/* Contact */}
-      <section id="contact" className="px-8 py-40 mx-auto text-center" style={{ backgroundColor: `${theme.primaryColor}08` }}>
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">{content.contact.heading}</h2>
-          <p className="text-xl md:text-2xl opacity-75 mb-16 max-w-2xl mx-auto font-medium">{content.contact.message}</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            {content.contact.email && (
-              <a href={`mailto:${content.contact.email}`} className="px-10 py-5 rounded-full font-bold text-white shadow-xl hover:-translate-y-1 hover:shadow-2xl transition-all text-lg" style={{ backgroundColor: theme.primaryColor }}>
-                Email Me
-              </a>
-            )}
-            {content.contact.linkedin && (
-              <a href={content.contact.linkedin} target="_blank" rel="noreferrer" className="px-10 py-5 rounded-full font-bold border-2 hover:bg-black/5 transition-all text-lg" style={{ borderColor: theme.primaryColor, color: theme.primaryColor }}>
-                Connect on LinkedIn
-              </a>
-            )}
-          </div>
-        </div>
-      </section>
+      {/* Subtle section divider */}
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "0 2rem",
+        }}
+      >
+        <div
+          style={{
+            height: "1px",
+            background: `linear-gradient(90deg, transparent, ${theme.textColor}0a, transparent)`,
+          }}
+        />
+      </div>
+
+      {/* Experience — glass cards */}
+      <ExperienceSection experience={content.experience} theme={theme} />
+
+      {/* Subtle section divider */}
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "0 2rem",
+        }}
+      >
+        <div
+          style={{
+            height: "1px",
+            background: `linear-gradient(90deg, transparent, ${theme.textColor}0a, transparent)`,
+          }}
+        />
+      </div>
+
+      {/* Skills — bento grid */}
+      <SkillsSection skills={content.skills} theme={theme} />
+
+      {/* Contact — gradient text CTA */}
+      <ContactSection contact={content.contact} theme={theme} />
 
       {/* Footer */}
-      <footer className="py-12 text-center text-xs font-bold opacity-40 uppercase tracking-widest bg-black/5" style={{ backgroundColor: `${theme.textColor}05` }}>
-        © {new Date().getFullYear()} {content.hero.name}. All rights reserved.
-      </footer>
+      <FooterSection name={content.hero.name} theme={theme} />
     </div>
   )
 }
