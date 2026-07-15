@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React from "react"
 
 interface AnimatedTextProps {
   text: string
@@ -20,8 +20,8 @@ export default function AnimatedText({
   staggerDelay,
 }: AnimatedTextProps) {
 
-  const words = useMemo(() => text.split(" "), [text])
-  const chars = useMemo(() => text.split(""), [text])
+  const words = text.split(" ")
+  const chars = text.split("")
 
   if (variant === "fadeUp") {
     return (

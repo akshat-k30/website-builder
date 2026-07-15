@@ -3,7 +3,6 @@ import { ExperienceItem } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 import GlassCard from "./GlassCard"
 import ScrollReveal from "./ScrollReveal"
-import { Briefcase } from "lucide-react"
 
 interface ExperienceSectionProps {
   experience: ExperienceItem[]
@@ -65,7 +64,7 @@ function ExperienceCard({
                 marginTop: "0.5rem",
               }}
             >
-              <Briefcase size={14} style={{ color: theme.primaryColor, opacity: 0.7 }} />
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: theme.primaryColor, opacity: 0.7 }}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
               <span
                 style={{
                   fontSize: "1rem",
