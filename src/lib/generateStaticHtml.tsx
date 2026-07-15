@@ -66,20 +66,23 @@ export function generateStaticHtml(
 <body>
   <div id="root">${renderedComponent}</div>
   <script>
-    (function() {
-      const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            obs.unobserve(entry.target);
-          }
+    window.addEventListener('load', function() {
+      // Small delay to ensure Tailwind CDN has fully injected the styles and layout is established
+      setTimeout(() => {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+        
+        document.querySelectorAll('.css-reveal:not(.is-visible)').forEach((el) => {
+          observer.observe(el);
         });
-      }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-      
-      document.querySelectorAll('.css-reveal:not(.is-visible)').forEach((el) => {
-        observer.observe(el);
-      });
-    })();
+      }, 150);
+    });
   </script>
 </body>
 </html>`
