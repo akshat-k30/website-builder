@@ -39,7 +39,7 @@ export function generateStaticHtml(
         style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
       >
         Powered by{" "}
-        <span className="underline">WebsiteBuilder</span>
+        <span className="underline">Profilio</span>
       </div>
     </div>
   )

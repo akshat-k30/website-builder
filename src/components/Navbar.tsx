@@ -45,7 +45,7 @@ export default function Navbar() {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white shadow-[var(--shadow-glow)] transition-transform duration-300 group-hover:scale-105">
             <Sparkles className="h-5 w-5" />
           </span>
-          <span className="text-lg font-extrabold tracking-tight text-foreground">WebsiteBuilder</span>
+          <span className="text-lg font-extrabold tracking-tight text-foreground">Profilio</span>
         </Link>
 
         {/* Desktop nav */}

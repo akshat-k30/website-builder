@@ -33,7 +33,7 @@ export default function AuthShell({ eyebrow, title, subtitle, children, footer }
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur">
               <Sparkles className="h-5 w-5" />
             </span>
-            <span className="text-lg font-extrabold tracking-tight">WebsiteBuilder</span>
+            <span className="text-lg font-extrabold tracking-tight">Profilio</span>
           </Link>
 
           <div>

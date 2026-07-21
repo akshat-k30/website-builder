@@ -328,9 +328,9 @@ export default function LandingPage() {
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-white">
               <Globe className="h-5 w-5" />
             </span>
-            WebsiteBuilder
+            Profilio
           </div>
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} WebsiteBuilder. Built for makers.</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Profilio. Built for makers.</p>
           <div className="flex items-center gap-4 text-muted-foreground">
             <a href="mailto:hello@example.com" className="transition-colors hover:text-primary" aria-label="Email">
               <Mail className="h-5 w-5" />

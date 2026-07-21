@@ -63,7 +63,7 @@ function SiteNotFound({ subdomain }: { subdomain: string }) {
         </Link>
 
         <p className="mt-8 text-xs text-slate-400 font-medium">
-          Powered by WebsiteBuilder
+          Powered by Profilio
         </p>
       </div>
     </div>

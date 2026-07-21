@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${group.name} — Group Directory | WebsiteBuilder`,
+    title: `${group.name} — Group Directory | Profilio`,
     description: group.description || `Browse the published portfolio websites of ${group.name} members.`,
   }
 }
@@ -287,7 +287,7 @@ export default async function DirectoryPage({ params }: PageProps) {
               fontWeight: 700,
             }}
           >
-            WebsiteBuilder
+            Profilio
           </span>
         </p>
       </div>

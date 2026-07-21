@@ -190,7 +190,7 @@ export default function EditorPage() {
     )
   }
 
-  const displayUrl = publishedUrl ? publishedUrl.replace(/^https?:\/\//, "") : "yoursite.websitebuilder.app"
+  const displayUrl = publishedUrl ? publishedUrl.replace(/^https?:\/\//, "") : "yoursite.profilio.app"
 
   return (
     <div className="flex h-[calc(100vh-64px)] w-full overflow-hidden bg-background">

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "WebsiteBuilder - AI-Powered Personal Websites",
+  title: "Profilio - AI-Powered Personal Websites",
   description:
     "Paste your LinkedIn URL, generate a professional website with AI, and publish in minutes.",
 }
