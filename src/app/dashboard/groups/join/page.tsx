@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { ArrowLeft, UserPlus, AlertCircle, Loader2 } from "lucide-react"
 
 export default function JoinGroupPage() {
   const router = useRouter()
@@ -23,11 +24,8 @@ export default function JoinGroupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inviteCode }),
       })
-
       const data = await res.json()
-
       if (!res.ok) {
-        // If already a member, redirect to the group
         if (res.status === 409 && data.groupId) {
           router.push(`/dashboard/groups/${data.groupId}`)
           router.refresh()
@@ -37,7 +35,6 @@ export default function JoinGroupPage() {
         setLoading(false)
         return
       }
-
       router.push(`/dashboard/groups/${data.groupId}`)
       router.refresh()
     } catch {
@@ -47,44 +44,47 @@ export default function JoinGroupPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-6 py-12">
-      <Link
-        href="/dashboard"
-        className="inline-flex items-center gap-2 text-base font-medium text-zinc-500 hover:text-zinc-900 mb-8 transition-colors"
-      >
-        ← Back to Dashboard
-      </Link>
-      <h1 className="text-3xl font-bold mb-2 text-zinc-900">Join a Group</h1>
-      <p className="text-zinc-500 mb-8">
-        Enter the invite code shared by your group admin to join.
-      </p>
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="invite-code"
-            className="block text-sm font-bold text-zinc-700 mb-1.5"
-          >
-            Invite Code
-          </label>
-          <input
-            id="invite-code"
-            name="inviteCode"
-            type="text"
-            required
-            maxLength={6}
-            placeholder="e.g., ABC123"
-            className="w-full rounded-lg border border-zinc-300 bg-white text-zinc-900 px-3 py-3 text-center text-xl font-mono tracking-widest uppercase focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors shadow-sm"
-          />
+    <div className="min-h-[calc(100vh-64px)] bg-background px-6 py-12">
+      <div className="mx-auto max-w-lg">
+        <Link href="/dashboard" className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Back to dashboard
+        </Link>
+
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-md)]">
+          <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <UserPlus className="h-6 w-6" />
+          </div>
+          <h1 className="font-[var(--font-display)] text-2xl font-extrabold tracking-tight text-foreground">Join a group</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Enter the invite code shared by your group admin to join.</p>
+
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <div>
+              <label htmlFor="invite-code" className="mb-1.5 block text-sm font-semibold text-foreground">Invite code</label>
+              <input
+                id="invite-code"
+                name="inviteCode"
+                type="text"
+                required
+                maxLength={6}
+                placeholder="ABC123"
+                className="w-full rounded-xl border border-border bg-background px-3 py-3 text-center font-mono text-xl uppercase tracking-[0.4em] text-foreground outline-none transition-all placeholder:text-muted-foreground/40 placeholder:tracking-widest focus:border-primary focus:ring-4 focus:ring-primary/15"
+              />
+            </div>
+            {error && (
+              <div role="alert" className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-500">
+                <AlertCircle className="h-4 w-4 flex-none" /> {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:enabled:-translate-y-0.5 hover:enabled:bg-primary-hover disabled:opacity-50"
+            >
+              {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Joining…</> : "Join group"}
+            </button>
+          </form>
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-50 transition-colors shadow-md shadow-primary/20"
-        >
-          {loading ? "Joining..." : "Join Group"}
-        </button>
-      </form>
+      </div>
     </div>
   )
 }

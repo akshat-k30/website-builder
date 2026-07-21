@@ -2,6 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import {
+  ArrowLeft,
+  Loader2,
+  Check,
+  X,
+  ExternalLink,
+  Copy,
+  Rocket,
+  RefreshCw,
+  CircleCheck,
+} from "lucide-react"
 
 export default function PublishPage() {
   const router = useRouter()
@@ -10,19 +21,15 @@ export default function PublishPage() {
   const [isPublishing, setIsPublishing] = useState(false)
   const [isUnpublishing, setIsUnpublishing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [availability, setAvailability] = useState<{
-    available: boolean
-    reason: string | null
-  } | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [availability, setAvailability] = useState<{ available: boolean; reason: string | null } | null>(null)
 
-  // Current publish state
   const [currentStatus, setCurrentStatus] = useState<string>("draft")
   const [_currentSubdomain, setCurrentSubdomain] = useState<string | null>(null)
   const [currentUrl, setCurrentUrl] = useState<string | null>(null)
   const [cloudfrontDomain, setCloudfrontDomain] = useState<string | null>(null)
   const [_userName, setUserName] = useState<string>("")
 
-  // Load current website state
   useEffect(() => {
     async function fetchState() {
       try {
@@ -37,7 +44,6 @@ export default function PublishPage() {
         setCurrentUrl(data.publishedUrl)
         setCloudfrontDomain(data.cloudfrontDomain)
 
-        // Pre-fill subdomain from current or from user's name
         if (data.subdomain) {
           setSubdomain(data.subdomain)
         } else if (data.content?.hero?.name) {
@@ -58,7 +64,6 @@ export default function PublishPage() {
     fetchState()
   }, [router])
 
-  // Debounced subdomain availability check
   const checkAvailability = useCallback(async (value: string) => {
     if (value.length < 3) {
       setAvailability(null)
@@ -66,9 +71,7 @@ export default function PublishPage() {
     }
     setIsChecking(true)
     try {
-      const res = await fetch(
-        `/api/publish/check?subdomain=${encodeURIComponent(value)}`
-      )
+      const res = await fetch(`/api/publish/check?subdomain=${encodeURIComponent(value)}`)
       const data = await res.json()
       setAvailability(data)
     } catch {
@@ -80,20 +83,14 @@ export default function PublishPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (subdomain.length >= 3) {
-        checkAvailability(subdomain)
-      } else {
-        setAvailability(null)
-      }
+      if (subdomain.length >= 3) checkAvailability(subdomain)
+      else setAvailability(null)
     }, 400)
     return () => clearTimeout(timer)
   }, [subdomain, checkAvailability])
 
   const handleSubdomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, "")
-      .slice(0, 30)
+    const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 30)
     setSubdomain(value)
   }
 
@@ -111,7 +108,6 @@ export default function PublishPage() {
         alert(data.error || "Failed to publish")
         return
       }
-      // Redirect to success page with URL info
       router.push(
         `/dashboard/publish/success?url=${encodeURIComponent(data.publishedUrl)}&subdomain=${encodeURIComponent(data.subdomain)}`
       )
@@ -123,7 +119,7 @@ export default function PublishPage() {
   }
 
   const handleUnpublish = async () => {
-    if (!confirm("Are you sure you want to unpublish your website? The URL will stop working and visitors will see a \"not found\" page.")) return
+    if (!confirm('Are you sure you want to unpublish your website? The URL will stop working and visitors will see a "not found" page.')) return
     setIsUnpublishing(true)
     try {
       const res = await fetch("/api/publish", { method: "DELETE" })
@@ -142,82 +138,82 @@ export default function PublishPage() {
     }
   }
 
+  const handleCopy = () => {
+    if (!currentUrl) return
+    navigator.clipboard.writeText(currentUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   const baseUrl = typeof window !== "undefined" ? window.location.origin : ""
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-73px)] items-center justify-center bg-background">
+      <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-          <p className="text-sm text-muted-foreground font-medium">Loading publish settings...</p>
+          <Loader2 className="h-9 w-9 animate-spin text-primary" />
+          <p className="text-sm font-medium text-muted-foreground">Loading publish settings…</p>
         </div>
       </div>
     )
   }
 
+  const canPublish = !!availability?.available && subdomain.length >= 3
+
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-background">
-      <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="relative min-h-[calc(100vh-64px)] overflow-hidden bg-background">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-72 bg-grid bg-grid-fade opacity-50" />
+
+      <div className="relative mx-auto max-w-2xl px-6 py-12">
         {/* Header */}
         <div className="mb-10">
           <button
             onClick={() => router.push("/dashboard/editor")}
-            className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 mb-6"
+            className="mb-6 flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Editor
+            <ArrowLeft className="h-4 w-4" /> Back to editor
           </button>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Publish Your Website</h1>
-          <p className="text-muted-foreground text-sm">
-            Choose your website address and go live in seconds.
-          </p>
+          <h1 className="font-[var(--font-display)] text-3xl font-extrabold tracking-tight text-foreground">
+            Publish your website
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">Choose your address and go live in seconds.</p>
         </div>
 
-        {/* Already Published Banner */}
+        {/* Live banner (glow) */}
         {currentStatus === "published" && currentUrl && (
-          <div className="mb-8 p-5 rounded-2xl border-2 border-green-500/30 bg-green-500/5">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center shrink-0 mt-0.5">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+          <div className="relative mb-8 overflow-hidden rounded-2xl border border-success/30 bg-success/5 p-5 shadow-[0_0_40px_-12px_rgba(16,185,129,0.4)]">
+            <div aria-hidden className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-success/20 blur-2xl [animation:aurora_10s_ease-in-out_infinite_alternate]" />
+            <div className="relative flex items-start gap-4">
+              <div className="mt-0.5 flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-success/15 text-success">
+                <CircleCheck className="h-5 w-5" />
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-foreground mb-1">Your website is live!</h3>
-                <a
-                  href={currentUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-sm text-primary font-semibold hover:underline break-all"
-                >
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-foreground">Your website is live!</h3>
+                <a href={currentUrl} target="_blank" rel="noreferrer" className="break-all text-sm font-semibold text-primary hover:underline">
                   {currentUrl}
                 </a>
-                <div className="flex items-center gap-3 mt-4">
+                <div className="mt-4 flex flex-wrap items-center gap-3">
                   <a
                     href={currentUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-4 py-2 bg-green-500 text-white text-sm font-bold rounded-lg hover:bg-green-600 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-success px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-0.5"
                   >
-                    View Site ↗
+                    <ExternalLink className="h-4 w-4" /> View site
                   </a>
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(currentUrl!)
-                      alert("URL copied to clipboard!")
-                    }}
-                    className="px-4 py-2 bg-card border border-border text-sm font-bold rounded-lg text-foreground hover:bg-muted transition-colors"
+                    onClick={handleCopy}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted"
                   >
-                    Copy URL
+                    {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+                    {copied ? "Copied!" : "Copy URL"}
                   </button>
                   <button
                     onClick={handleUnpublish}
                     disabled={isUnpublishing}
-                    className="px-4 py-2 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-auto"
+                    className="ml-auto rounded-lg px-4 py-2 text-sm font-semibold text-red-500 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                   >
-                    {isUnpublishing ? "Unpublishing..." : "Unpublish"}
+                    {isUnpublishing ? "Unpublishing…" : "Unpublish"}
                   </button>
                 </div>
               </div>
@@ -225,19 +221,16 @@ export default function PublishPage() {
           </div>
         )}
 
-        {/* Subdomain Input Card */}
-        <div className="bg-card rounded-2xl border border-border p-8 shadow-sm mb-6">
-          <h2 className="text-lg font-bold text-foreground mb-1">
-            {currentStatus === "published" ? "Change Your Address" : "Choose Your Website Address"}
+        {/* Subdomain card */}
+        <div className="mb-6 rounded-2xl border border-border bg-card p-8 shadow-[var(--shadow-md)]">
+          <h2 className="text-lg font-bold text-foreground">
+            {currentStatus === "published" ? "Change your address" : "Choose your website address"}
           </h2>
-          <p className="text-sm text-muted-foreground mb-6">
-            This will be the URL where people can visit your website.
-          </p>
+          <p className="mb-6 mt-1 text-sm text-muted-foreground">This will be the URL where people visit your website.</p>
 
-          {/* URL Preview + Input */}
-          <div className="rounded-xl border-2 border-border focus-within:border-primary/50 bg-background transition-colors overflow-hidden">
+          <div className="overflow-hidden rounded-xl border-2 border-border bg-background transition-colors focus-within:border-primary/60 focus-within:ring-4 focus-within:ring-primary/10">
             <div className="flex items-center">
-              <span className="px-4 py-4 text-sm text-muted-foreground font-mono bg-muted/50 border-r border-border whitespace-nowrap select-none">
+              <span className="select-none whitespace-nowrap border-r border-border bg-muted/50 px-4 py-4 font-mono text-sm text-muted-foreground">
                 {cloudfrontDomain ? `${cloudfrontDomain}/` : `${baseUrl}/sites/`}
               </span>
               <input
@@ -245,80 +238,61 @@ export default function PublishPage() {
                 value={subdomain}
                 onChange={handleSubdomainChange}
                 placeholder="your-name"
-                className="flex-1 px-4 py-4 text-base font-mono font-semibold text-foreground bg-transparent outline-none placeholder:text-muted-foreground/50"
                 maxLength={30}
+                className="flex-1 bg-transparent px-4 py-4 font-mono text-base font-semibold text-foreground outline-none placeholder:text-muted-foreground/50"
               />
-              {/* Status indicator */}
-              <div className="pr-4 shrink-0">
-                {isChecking && (
-                  <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-                )}
+              <div className="shrink-0 pr-4">
+                {isChecking && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
                 {!isChecking && availability?.available && (
-                  <div className="w-6 h-6 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-success/15 text-success">
+                    <Check className="h-4 w-4" />
+                  </span>
                 )}
                 {!isChecking && availability && !availability.available && (
-                  <div className="w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </div>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500/15 text-red-500">
+                    <X className="h-4 w-4" />
+                  </span>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Availability message */}
-          <div className="mt-3 h-5">
+          <div className="mt-3 h-5 text-sm font-semibold">
             {!isChecking && availability?.available && (
-              <p className="text-sm font-semibold text-green-600 flex items-center gap-1.5">
-                <span>✓</span> This address is available!
-              </p>
+              <p className="flex items-center gap-1.5 text-success"><Check className="h-4 w-4" /> This address is available!</p>
             )}
             {!isChecking && availability && !availability.available && (
-              <p className="text-sm font-semibold text-red-500 flex items-center gap-1.5">
-                <span>✕</span> {availability.reason || "This address is not available."}
-              </p>
+              <p className="flex items-center gap-1.5 text-red-500"><X className="h-4 w-4" /> {availability.reason || "This address is not available."}</p>
             )}
             {subdomain.length > 0 && subdomain.length < 3 && (
-              <p className="text-sm text-muted-foreground">
-                Minimum 3 characters required.
-              </p>
+              <p className="font-normal text-muted-foreground">Minimum 3 characters required.</p>
             )}
           </div>
         </div>
 
-
-
-        {/* Publish Button */}
+        {/* Publish button + progress */}
         <button
           onClick={handlePublish}
-          disabled={isPublishing || !availability?.available || subdomain.length < 3}
-          className="w-full py-4.5 bg-primary text-primary-foreground font-bold text-lg rounded-2xl hover:bg-primary-hover transition-all shadow-lg shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-[0.99] flex items-center justify-center gap-3"
+          disabled={isPublishing || !canPublish}
+          className="relative w-full overflow-hidden rounded-2xl bg-primary py-5 text-lg font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:enabled:-translate-y-0.5 hover:enabled:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
-          {isPublishing ? (
-            <>
-              <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
-              Publishing your site...
-            </>
-          ) : currentStatus === "published" ? (
-            <>
-              🔄 Republish with Latest Changes
-            </>
-          ) : (
-            <>
-              🚀 Publish Now
-            </>
+          <span className="relative z-10 flex items-center justify-center gap-2.5">
+            {isPublishing ? (
+              <><Loader2 className="h-5 w-5 animate-spin" /> Publishing your site…</>
+            ) : currentStatus === "published" ? (
+              <><RefreshCw className="h-5 w-5" /> Republish with latest changes</>
+            ) : (
+              <><Rocket className="h-5 w-5" /> Publish now</>
+            )}
+          </span>
+          {/* Indeterminate progress sweep while publishing */}
+          {isPublishing && (
+            <span aria-hidden className="absolute bottom-0 left-0 h-1 w-1/4 bg-white/70 [animation:progress-indeterminate_1.2s_ease-in-out_infinite]" />
           )}
         </button>
 
         {currentStatus !== "published" && (
-          <p className="text-center text-xs text-muted-foreground mt-4">
-            You can always change the address or unpublish later.
-          </p>
+          <p className="mt-4 text-center text-xs text-muted-foreground">You can always change the address or unpublish later.</p>
         )}
       </div>
     </div>

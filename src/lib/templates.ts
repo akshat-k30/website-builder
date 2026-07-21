@@ -67,4 +67,30 @@ export const availableTemplates: TemplateDefinition[] = [
       fontFamily: "Helvetica, Arial, sans-serif",
     },
   },
+  {
+    id: "aurora-gradient",
+    name: "Aurora",
+    description: "A vibrant, gradient-driven design with glassmorphism, an animated mesh background, and bold display type. Built for creatives.",
+    imageUrl: "/templates/aurora-gradient.png",
+    defaultTheme: {
+      primaryColor: "#7c3aed",
+      secondaryColor: "#ec4899",
+      backgroundColor: "#fdfcff",
+      textColor: "#1a1523",
+      fontFamily: "'Syne', sans-serif",
+    },
+  },
+  {
+    id: "noir-luxe",
+    name: "Noir Luxe",
+    description: "A dark, editorial luxury layout with oversized serif display and gold accents. For a refined, high-end statement.",
+    imageUrl: "/templates/noir-luxe.png",
+    defaultTheme: {
+      primaryColor: "#c9a227",
+      secondaryColor: "#8a6d3b",
+      backgroundColor: "#0e0e10",
+      textColor: "#ece8e1",
+      fontFamily: "'Libre Bodoni', serif",
+    },
+  },
 ]

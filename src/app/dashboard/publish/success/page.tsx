@@ -2,6 +2,9 @@
 
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect, Suspense } from "react"
+import { motion } from "framer-motion"
+import { PartyPopper, ExternalLink, Copy, Check, Loader2, ArrowLeft } from "lucide-react"
+import Confetti from "@/components/Confetti"
 
 function SuccessContent() {
   const searchParams = useSearchParams()
@@ -12,15 +15,12 @@ function SuccessContent() {
   const [showConfetti, setShowConfetti] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowConfetti(false), 4000)
+    const timer = setTimeout(() => setShowConfetti(false), 5000)
     return () => clearTimeout(timer)
   }, [])
 
-  // Redirect to dashboard if no URL param — do this in useEffect, not during render
   useEffect(() => {
-    if (!url) {
-      router.push("/dashboard")
-    }
+    if (!url) router.push("/dashboard")
   }, [url, router])
 
   const handleCopy = async () => {
@@ -29,7 +29,6 @@ function SuccessContent() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // Fallback
       const textArea = document.createElement("textarea")
       textArea.value = url
       document.body.appendChild(textArea)
@@ -41,163 +40,92 @@ function SuccessContent() {
     }
   }
 
-  // If no url param, show nothing while the useEffect redirect fires
-  if (!url) {
-    return null
-  }
+  if (!url) return null
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-background flex items-center justify-center px-6 relative overflow-hidden">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full opacity-[0.07] animate-pulse"
-          style={{ background: "radial-gradient(circle, var(--primary) 0%, transparent 70%)" }}
-        ></div>
-        <div
-          className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full opacity-[0.05] animate-pulse"
-          style={{ background: "radial-gradient(circle, var(--primary) 0%, transparent 70%)", animationDelay: "1s" }}
-        ></div>
+    <div className="relative flex min-h-[calc(100vh-64px)] items-center justify-center overflow-hidden bg-background px-6">
+      {/* Ambient glow */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[130px]" />
       </div>
 
-      {/* Confetti particles */}
-      {showConfetti && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 30 }).map((_, i) => {
-            const CONFETTI_COLORS = ["#4361ee", "#f72585", "#4cc9f0", "#7209b7", "#f77f00", "#06d6a0"]
-            return (
-              <div
-                key={i}
-                className="absolute animate-bounce"
-                style={{
-                  left: `${(i * 37 + 13) % 100}%`,
-                  top: `-${(i * 7 + 5) % 20 + 5}%`,
-                  animationDuration: `${(i % 3) + 2}s`,
-                  animationDelay: `${(i % 10) * 0.1}s`,
-                  opacity: ((i * 3) % 7 + 3) / 10,
-                }}
-              >
-                <div
-                  className="w-3 h-3 rounded-sm"
-                  style={{
-                    backgroundColor: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-                    transform: `rotate(${(i * 47) % 360}deg)`,
-                  }}
-                ></div>
-              </div>
-            )
-          })}
-        </div>
-      )}
+      {showConfetti && <Confetti />}
 
-      <div className="relative z-10 w-full max-w-lg">
-        {/* Success Card */}
-        <div className="bg-card rounded-3xl border border-border shadow-xl p-10 text-center">
-          {/* Celebration Icon */}
-          <div className="mb-6">
-            <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-2">
-              <span className="text-4xl">🎉</span>
-            </div>
-          </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 w-full max-w-lg"
+      >
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-10 text-center shadow-[var(--shadow-xl)]">
+          <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-success/20 blur-3xl" />
 
-          <h1 className="text-3xl font-extrabold text-foreground mb-3 tracking-tight">
-            Your Website is Live!
+          {/* Celebration icon */}
+          <motion.div
+            initial={{ scale: 0, rotate: -20 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.15, type: "spring", stiffness: 200, damping: 12 }}
+            className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-success to-accent text-white shadow-[0_0_40px_-8px_rgba(16,185,129,0.6)]"
+          >
+            <PartyPopper className="h-9 w-9" />
+          </motion.div>
+
+          <h1 className="font-[var(--font-display)] text-3xl font-extrabold tracking-tight text-foreground">
+            Your website is live!
           </h1>
-          <p className="text-muted-foreground text-sm mb-8 leading-relaxed max-w-sm mx-auto">
-            Congratulations! Your personal website has been published and is now accessible to anyone with the link.
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Congratulations! Your site is published and accessible to anyone with the link.
           </p>
 
-          {/* URL Display */}
-          <div className="bg-background rounded-xl border-2 border-primary/20 p-4 mb-6">
-            <p className="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider">Your website address</p>
-            <a
-              href={url}
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary font-bold text-lg hover:underline break-all leading-relaxed"
-            >
+          {/* URL */}
+          <div className="my-8 rounded-xl border-2 border-primary/20 bg-background p-4">
+            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Your website address</p>
+            <a href={url} target="_blank" rel="noreferrer" className="break-all text-lg font-bold leading-relaxed text-primary hover:underline">
               {url}
             </a>
           </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-3 mb-8">
+          {/* Actions */}
+          <div className="space-y-3">
             <a
               href={url}
               target="_blank"
               rel="noreferrer"
-              className="w-full py-4 bg-primary text-primary-foreground font-bold text-base rounded-xl hover:bg-primary-hover transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2 active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-base font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:-translate-y-0.5 hover:bg-primary-hover"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              View Your Site
+              <ExternalLink className="h-5 w-5" /> View your site
             </a>
-
             <button
               onClick={handleCopy}
-              className="w-full py-4 bg-card border-2 border-border text-foreground font-bold text-base rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-border bg-card py-4 text-base font-bold text-foreground transition-all hover:border-primary/40 hover:bg-primary/5"
             >
-              {copied ? (
-                <>
-                  <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-green-600">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Copy Link
-                </>
-              )}
+              {copied ? <><Check className="h-5 w-5 text-success" /> <span className="text-success">Copied!</span></> : <><Copy className="h-5 w-5" /> Copy link</>}
             </button>
           </div>
 
-          {/* Share Section */}
-          <div className="border-t border-border pt-6">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4">Share your website</p>
+          {/* Share */}
+          <div className="mt-8 border-t border-border pt-6">
+            <p className="mb-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Share your website</p>
             <div className="flex items-center justify-center gap-3">
-              <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="px-5 py-2.5 bg-[#0077b5]/10 text-[#0077b5] text-sm font-bold rounded-lg hover:bg-[#0077b5]/20 transition-colors"
-              >
+              <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`} target="_blank" rel="noreferrer" className="rounded-lg bg-[#0077b5]/10 px-5 py-2.5 text-sm font-bold text-[#0077b5] transition-colors hover:bg-[#0077b5]/20">
                 LinkedIn
               </a>
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent(`Check out my new website: ${url}`)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="px-5 py-2.5 bg-[#25d366]/10 text-[#25d366] text-sm font-bold rounded-lg hover:bg-[#25d366]/20 transition-colors"
-              >
+              <a href={`https://wa.me/?text=${encodeURIComponent(`Check out my new website: ${url}`)}`} target="_blank" rel="noreferrer" className="rounded-lg bg-[#25d366]/10 px-5 py-2.5 text-sm font-bold text-[#25d366] transition-colors hover:bg-[#25d366]/20">
                 WhatsApp
               </a>
-              <a
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent("Just published my personal website! 🚀")}`}
-                target="_blank"
-                rel="noreferrer"
-                className="px-5 py-2.5 bg-foreground/10 text-foreground text-sm font-bold rounded-lg hover:bg-foreground/20 transition-colors"
-              >
+              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent("Just published my personal website! 🚀")}`} target="_blank" rel="noreferrer" className="rounded-lg bg-foreground/10 px-5 py-2.5 text-sm font-bold text-foreground transition-colors hover:bg-foreground/20">
                 𝕏 / Twitter
               </a>
             </div>
           </div>
         </div>
 
-        {/* Back to Dashboard */}
-        <div className="text-center mt-6">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ← Back to Dashboard
+        <div className="mt-6 text-center">
+          <button onClick={() => router.push("/dashboard")} className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" /> Back to dashboard
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -206,8 +134,8 @@ export default function PublishSuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-[calc(100vh-73px)] items-center justify-center bg-background">
-          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-background">
+          <Loader2 className="h-9 w-9 animate-spin text-primary" />
         </div>
       }
     >

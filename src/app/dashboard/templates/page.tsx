@@ -2,89 +2,117 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
+import { Loader2, ArrowRight, Check } from "lucide-react"
 import { availableTemplates, TemplateDefinition } from "@/lib/templates"
 
 export default function TemplatesPage() {
   const router = useRouter()
-  const [isSaving, setIsSaving] = useState(false)
+  const [savingId, setSavingId] = useState<string | null>(null)
 
   const handleSelectTemplate = async (template: TemplateDefinition) => {
-    setIsSaving(true)
+    setSavingId(template.id)
     try {
       const res = await fetch("/api/website", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          templateId: template.id,
-          themeSettings: template.defaultTheme,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ templateId: template.id, themeSettings: template.defaultTheme }),
       })
-
-      if (!res.ok) {
-        throw new Error("Failed to save template")
-      }
-
+      if (!res.ok) throw new Error("Failed to save template")
       router.push("/dashboard/editor")
     } catch (error) {
       console.error(error)
       alert("Failed to select template.")
-    } finally {
-      setIsSaving(false)
+      setSavingId(null)
     }
   }
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-background py-12 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-10 text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Choose a Template</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Select a starting point for your personal website. You can customize colors, fonts, and layout later in the editor.
+    <div className="min-h-[calc(100vh-64px)] bg-background px-6 py-14">
+      <div className="mx-auto max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto mb-12 max-w-2xl text-center"
+        >
+          <span className="text-sm font-bold uppercase tracking-widest text-primary">Templates</span>
+          <h1 className="mt-3 font-[var(--font-display)] text-4xl font-extrabold tracking-tight text-foreground">
+            Choose your look
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Pick a starting point. You can fully customize colors, fonts, and content later in the editor.
           </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {availableTemplates.map((t, i) => {
+            const saving = savingId === t.id
+            const theme = t.defaultTheme
+            return (
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-md)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-xl)]"
+              >
+                {/* Stylized preview built from the template's own theme */}
+                <div
+                  className="relative h-48 overflow-hidden border-b border-border p-6"
+                  style={{ backgroundColor: theme.backgroundColor }}
+                >
+                  <div
+                    aria-hidden
+                    className="absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-40 blur-2xl transition-transform duration-500 group-hover:scale-125"
+                    style={{ background: `radial-gradient(circle, ${theme.primaryColor}, transparent 70%)` }}
+                  />
+                  <div className="relative">
+                    <div
+                      className="text-xl font-extrabold tracking-tight"
+                      style={{ color: theme.primaryColor, fontFamily: theme.fontFamily }}
+                    >
+                      {t.name}
+                    </div>
+                    <div className="mt-3 space-y-2">
+                      <div className="h-2.5 w-3/4 rounded-full" style={{ backgroundColor: theme.textColor, opacity: 0.85 }} />
+                      <div className="h-2 w-1/2 rounded-full" style={{ backgroundColor: theme.textColor, opacity: 0.3 }} />
+                    </div>
+                    <div className="mt-5 flex gap-2">
+                      <span className="h-6 w-16 rounded-md" style={{ backgroundColor: theme.primaryColor }} />
+                      <span className="h-6 w-16 rounded-md border" style={{ borderColor: theme.textColor, opacity: 0.3 }} />
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {[theme.primaryColor, theme.secondaryColor, theme.textColor].map((c, ci) => (
+                        <span key={ci} className="h-4 w-4 rounded-full ring-1 ring-black/10" style={{ backgroundColor: c }} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="text-lg font-bold text-foreground">{t.name}</h3>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{t.description}</p>
+                  <button
+                    onClick={() => handleSelectTemplate(t)}
+                    disabled={!!savingId}
+                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:enabled:-translate-y-0.5 hover:enabled:bg-primary-hover disabled:opacity-50"
+                  >
+                    {saving ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" /> Applying…</>
+                    ) : (
+                      <>Use template <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></>
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {availableTemplates.map((template) => (
-            <div
-              key={template.id}
-              className="group relative bg-card rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-border hover:border-primary/50 overflow-hidden flex flex-col"
-            >
-              {/* Preview Area */}
-              <div 
-                className="h-48 w-full flex items-center justify-center p-4 border-b border-border transition-colors duration-300 relative overflow-hidden"
-                style={{ backgroundColor: template.defaultTheme.backgroundColor }}
-              >
-                <div 
-                  className="text-2xl font-bold tracking-tight z-10"
-                  style={{ color: template.defaultTheme.primaryColor, fontFamily: template.defaultTheme.fontFamily }}
-                >
-                  {template.name}
-                </div>
-                {/* Decorative background pattern to make it look premium */}
-                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black/20 via-transparent to-transparent"></div>
-              </div>
-              
-              <div className="p-6 flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-foreground mb-2">
-                  {template.name}
-                </h3>
-                <p className="text-muted-foreground mb-6 flex-1 text-sm leading-relaxed">
-                  {template.description}
-                </p>
-                
-                <button
-                  onClick={() => handleSelectTemplate(template)}
-                  disabled={isSaving}
-                  className="w-full py-3.5 px-4 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-hover transition-all disabled:opacity-50 shadow-md shadow-primary/20 active:scale-[0.98]"
-                >
-                  {isSaving ? "Saving..." : "Use Template"}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <p className="mt-10 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Check className="h-4 w-4 text-primary" /> Switching templates keeps all your content.
+        </p>
       </div>
     </div>
   )

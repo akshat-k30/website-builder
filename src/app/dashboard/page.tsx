@@ -1,256 +1,225 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import {
+  Plus,
+  UserPlus,
+  FileUp,
+  Sparkles,
+  Pencil,
+  Rocket,
+  CircleCheck,
+  Circle,
+  Users,
+  ExternalLink,
+  ArrowRight,
+} from "lucide-react"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
+const IN = "animate-[fade-up_0.6s_cubic-bezier(0.22,1,0.36,1)_both]"
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
-
-  if (!session?.user?.email) {
-    redirect("/login")
-  }
+  if (!session?.user?.email) redirect("/login")
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     select: { id: true, name: true, email: true, createdAt: true },
   })
+  if (!user) redirect("/login")
 
-  if (!user) {
-    redirect("/login")
-  }
-
-  // Fetch user's groups
   const memberships = await prisma.groupMember.findMany({
     where: { userId: user.id },
-    include: {
-      group: {
-        include: {
-          _count: {
-            select: { createdBy: true },
-          },
-        },
-      },
-    },
+    include: { group: { include: { _count: { select: { createdBy: true } } } } },
     orderBy: { joinedAt: "desc" },
   })
 
-  // Check if user has a LinkedIn profile
   const linkedinProfile = await prisma.linkedInProfile.findUnique({
     where: { userId: user.id },
     select: { id: true, parsedName: true, updatedAt: true },
   })
 
-  // Check if user has generated website content
   const website = await prisma.website.findUnique({
     where: { userId: user.id },
     select: { id: true, status: true, updatedAt: true, subdomain: true, publishedUrl: true },
   })
 
-  const getGreeting = () => {
-    const hour = new Date().getHours()
-    if (hour < 12) return "Good morning"
-    if (hour < 18) return "Good afternoon"
-    return "Good evening"
-  }
+  const hasLI = !!linkedinProfile
+  const hasSite = !!website
+  const isPub = website?.status === "published"
+
+  const greeting = (() => {
+    const h = new Date().getHours()
+    return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"
+  })()
+
+  // Pipeline: first not-done step becomes "current"
+  const pipeline = [
+    { label: "Import LinkedIn", href: hasLI ? "/dashboard/linkedin/review" : "/dashboard/linkedin", done: hasLI },
+    { label: "Generate", href: hasSite ? "/dashboard/editor" : "/dashboard/generate", done: hasSite },
+    { label: "Edit", href: "/dashboard/editor", done: isPub },
+    { label: "Publish", href: hasSite ? "/dashboard/publish" : "/dashboard/generate", done: isPub },
+  ]
+  const currentIdx = pipeline.findIndex((s) => !s.done)
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-background">
-      <div className="max-w-6xl mx-auto px-8 py-12">
-        
-        {/* Header Section */}
-        <div className="flex justify-between items-end mb-10">
+    <div className="min-h-[calc(100vh-64px)] bg-background">
+      {/* Ambient top glow */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-16 -z-0 h-64 bg-grid bg-grid-fade opacity-50" />
+
+      <div className="relative mx-auto max-w-6xl px-6 py-12 sm:px-8">
+        {/* Header */}
+        <div className={`mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end ${IN}`}>
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-2">
-              {getGreeting()}, {user.name?.split(" ")[0] || "User"} <span className="text-2xl">👋</span>
+            <h1 className="flex items-center gap-2 text-3xl font-extrabold tracking-tight text-foreground">
+              {greeting}, {user.name?.split(" ")[0] || "there"} <span aria-hidden>👋</span>
             </h1>
-            <p className="text-muted-foreground text-sm">
-              Manage your groups and website from here.
-            </p>
+            <p className="mt-1.5 text-sm text-muted-foreground">Manage your groups and website from here.</p>
           </div>
           <div className="flex items-center gap-3">
-            {website?.status === "published" && website.publishedUrl && (
+            {isPub && website?.publishedUrl && (
               <a
                 href={website.publishedUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm flex items-center gap-2"
+                className="inline-flex items-center gap-2 rounded-xl bg-success px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_30px_-10px_rgba(16,185,129,0.6)] transition-all hover:-translate-y-0.5"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                View Live Site
+                <ExternalLink className="h-4 w-4" /> View live site
               </a>
             )}
-            {linkedinProfile ? (
+            {hasLI ? (
               <Link
-                href={website ? "/dashboard/editor" : "/dashboard/generate"}
-                className="bg-primary hover:bg-primary-hover text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm flex items-center gap-2"
+                href={hasSite ? "/dashboard/editor" : "/dashboard/generate"}
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:-translate-y-0.5 hover:bg-primary-hover"
               >
-                {website ? (
-                  <>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                    Edit Website
-                  </>
-                ) : (
-                  <>
-                    <span>+</span> New Website
-                  </>
-                )}
+                {hasSite ? <><Pencil className="h-4 w-4" /> Edit website</> : <><Plus className="h-4 w-4" /> New website</>}
               </Link>
             ) : (
               <button
                 disabled
-                className="bg-muted text-muted-foreground px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm flex items-center gap-2 opacity-60 cursor-not-allowed"
-                title="Upload LinkedIn profile first"
+                title="Upload your LinkedIn profile first"
+                className="inline-flex cursor-not-allowed items-center gap-2 rounded-xl bg-muted px-5 py-2.5 text-sm font-semibold text-muted-foreground opacity-70"
               >
-                <span>+</span> New Website
+                <Plus className="h-4 w-4" /> New website
               </button>
             )}
           </div>
         </div>
 
-        {/* Quick Actions (Stats style cards) */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
-          <Link
+        {/* Pipeline progress */}
+        <div className={`mb-12 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-md)] ${IN}`} style={{ animationDelay: "60ms" }}>
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Your pipeline</h2>
+            <span className="text-xs font-semibold text-muted-foreground">
+              {pipeline.filter((s) => s.done).length} / {pipeline.length} complete
+            </span>
+          </div>
+          <ol className="grid grid-cols-2 gap-x-2 gap-y-6 sm:grid-cols-4">
+            {pipeline.map((s, i) => {
+              const state = s.done ? "done" : i === currentIdx ? "current" : "todo"
+              return (
+                <li key={s.label} className="relative flex flex-col items-center text-center">
+                  {/* connector */}
+                  {i < pipeline.length - 1 && (
+                    <span
+                      aria-hidden
+                      className={`absolute left-1/2 top-5 hidden h-0.5 w-full sm:block ${s.done ? "bg-primary" : "bg-border"}`}
+                    />
+                  )}
+                  <Link href={s.href} className="group relative z-10 flex flex-col items-center">
+                    <span
+                      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300 group-hover:scale-110 ${
+                        state === "done"
+                          ? "border-primary bg-primary text-white"
+                          : state === "current"
+                            ? "border-primary bg-card text-primary [animation:pulse-ring_2.4s_cubic-bezier(0.4,0,0.6,1)_infinite]"
+                            : "border-border bg-card text-muted-foreground"
+                      }`}
+                    >
+                      {state === "done" ? <CircleCheck className="h-5 w-5" /> : <Circle className="h-4 w-4" />}
+                    </span>
+                    <span className={`mt-2.5 text-xs font-semibold ${state === "todo" ? "text-muted-foreground" : "text-foreground"}`}>
+                      {s.label}
+                    </span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
+
+        {/* Quick actions */}
+        <div className="mb-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <QuickCard
             href="/dashboard/groups/create"
-            className="bg-card rounded-2xl border border-border p-6 hover:border-primary/50 transition-colors flex flex-col gap-4 shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="font-bold text-foreground mb-1">Create Group</h2>
-              <p className="text-xs text-muted-foreground leading-relaxed">Start a new group for your team or class.</p>
-            </div>
-          </Link>
-          
-          <Link
+            icon={<Plus className="h-5 w-5" />}
+            title="Create Group"
+            desc="Start a new group for your team or class."
+            delay={120}
+          />
+          <QuickCard
             href="/dashboard/groups/join"
-            className="bg-card rounded-2xl border border-border p-6 hover:border-primary/50 transition-colors flex flex-col gap-4 shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="font-bold text-foreground mb-1">Join Group</h2>
-              <p className="text-xs text-muted-foreground leading-relaxed">Enter an invite code to join an existing group.</p>
-            </div>
-          </Link>
-
-          <Link
-            href={linkedinProfile ? "/dashboard/linkedin/review" : "/dashboard/linkedin"}
-            className="bg-card rounded-2xl border border-border p-6 hover:border-primary/50 transition-colors flex flex-col gap-4 shadow-sm"
-          >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${linkedinProfile ? "bg-green-500/10 text-green-500" : "bg-primary/10 text-primary"}`}>
-              {linkedinProfile ? (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-              )}
-            </div>
-            <div>
-              <h2 className="font-bold text-foreground mb-1">{linkedinProfile ? "LinkedIn Ready" : "Import Data"}</h2>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {linkedinProfile ? "Profile imported. Click to review." : "Upload your resume PDF."}
-              </p>
-            </div>
-          </Link>
-
-          {linkedinProfile ? (
-            <Link
-              href={website ? "/dashboard/editor" : "/dashboard/generate"}
-              className="bg-card rounded-2xl border border-border p-6 flex flex-col gap-4 transition-colors shadow-sm hover:border-primary/50"
-            >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${website?.status === "published" ? "bg-green-500/10 text-green-500" : website ? "bg-yellow-500/10 text-yellow-500" : "bg-primary/10 text-primary"}`}>
-                {website?.status === "published" ? (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : website ? (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                  </svg>
-                )}
-              </div>
-              <div>
-                <h2 className="font-bold text-foreground mb-1">
-                  {website?.status === "published" ? "Published ✓" : website ? "Website Ready" : "Generate"}
-                </h2>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {website?.status === "published" 
-                    ? "Your site is live. Click to edit." 
-                    : website 
-                      ? "AI content generated. Click to edit." 
-                      : "Use AI to create copy."}
-                </p>
-              </div>
-            </Link>
+            icon={<UserPlus className="h-5 w-5" />}
+            title="Join Group"
+            desc="Enter an invite code to join an existing group."
+            delay={180}
+          />
+          <QuickCard
+            href={hasLI ? "/dashboard/linkedin/review" : "/dashboard/linkedin"}
+            icon={hasLI ? <CircleCheck className="h-5 w-5" /> : <FileUp className="h-5 w-5" />}
+            title={hasLI ? "LinkedIn Ready" : "Import Data"}
+            desc={hasLI ? "Profile imported. Click to review." : "Upload your resume PDF."}
+            tone={hasLI ? "success" : "primary"}
+            delay={240}
+          />
+          {hasLI ? (
+            <QuickCard
+              href={hasSite ? "/dashboard/editor" : "/dashboard/generate"}
+              icon={isPub ? <Rocket className="h-5 w-5" /> : hasSite ? <Pencil className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
+              title={isPub ? "Published ✓" : hasSite ? "Website Ready" : "Generate"}
+              desc={isPub ? "Your site is live. Click to edit." : hasSite ? "AI content generated. Click to edit." : "Use AI to create copy."}
+              tone={isPub ? "success" : hasSite ? "warning" : "primary"}
+              delay={300}
+            />
           ) : (
-            <div 
-              className="bg-card rounded-2xl border border-border p-6 flex flex-col gap-4 shadow-sm opacity-60 cursor-not-allowed"
-              title="Upload LinkedIn profile first"
+            <div
+              title="Upload your LinkedIn profile first"
+              className={`flex cursor-not-allowed flex-col gap-4 rounded-2xl border border-border bg-card p-6 opacity-60 shadow-sm ${IN}`}
+              style={{ animationDelay: "300ms" }}
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 text-primary">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                </svg>
-              </div>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Sparkles className="h-5 w-5" />
+              </span>
               <div>
-                <h2 className="font-bold text-foreground mb-1">Generate</h2>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Upload LinkedIn profile first.
-                </p>
+                <h3 className="font-bold text-foreground">Generate</h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Upload LinkedIn profile first.</p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Groups List */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-foreground">My Groups</h2>
-            <span className="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full">{memberships.length}</span>
-          </div>
+        {/* Groups */}
+        <div className={`mb-6 flex items-center gap-3 ${IN}`} style={{ animationDelay: "360ms" }}>
+          <h2 className="text-lg font-bold text-foreground">My Groups</h2>
+          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">{memberships.length}</span>
         </div>
 
-        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className={`overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-md)] ${IN}`} style={{ animationDelay: "420ms" }}>
           {memberships.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Users className="h-8 w-8" />
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">No groups yet</h3>
-              <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
-                You haven&apos;t joined any groups yet. Create a new group to collaborate with others or join an existing one using an invite code.
+              <h3 className="mb-2 text-lg font-bold text-foreground">No groups yet</h3>
+              <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
+                You haven&apos;t joined any groups yet. Create a new group to collaborate, or join one with an invite code.
               </p>
-              <div className="flex items-center justify-center gap-4">
-                <Link
-                  href="/dashboard/groups/create"
-                  className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
-                >
+              <div className="flex items-center justify-center gap-3">
+                <Link href="/dashboard/groups/create" className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:bg-primary-hover">
                   Create Group
                 </Link>
-                <Link
-                  href="/dashboard/groups/join"
-                  className="bg-transparent text-foreground border border-border px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-muted transition-colors shadow-sm"
-                >
+                <Link href="/dashboard/groups/join" className="rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted">
                   Join Group
                 </Link>
               </div>
@@ -258,19 +227,19 @@ export default async function DashboardPage() {
           ) : (
             <div className="divide-y divide-border">
               {memberships.map((m) => (
-                <div key={m.id} className="p-5 flex items-center justify-between hover:bg-muted/50 transition-colors">
+                <div key={m.id} className="group flex items-center justify-between p-5 transition-colors hover:bg-muted/50">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-lg">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-lg font-bold text-white">
                       {m.group.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <h3 className="font-bold text-foreground text-base mb-1">{m.group.name}</h3>
-                      <div className="flex items-center gap-3 text-xs font-medium text-muted-foreground">
+                      <h3 className="text-base font-bold text-foreground">{m.group.name}</h3>
+                      <div className="mt-1 flex items-center gap-3 text-xs font-medium text-muted-foreground">
                         <span>{m.group._count.createdBy} members</span>
                         {m.role === "admin" && (
                           <>
-                            <span className="w-1 h-1 rounded-full bg-border"></span>
-                            <span className="text-primary bg-primary/10 px-2 py-0.5 rounded">Admin</span>
+                            <span className="h-1 w-1 rounded-full bg-border" />
+                            <span className="rounded bg-primary/10 px-2 py-0.5 text-primary">Admin</span>
                           </>
                         )}
                       </div>
@@ -278,9 +247,9 @@ export default async function DashboardPage() {
                   </div>
                   <Link
                     href={`/dashboard/groups/${m.group.id}`}
-                    className="text-sm font-semibold text-primary bg-primary/10 px-4 py-2 rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors"
+                    className="inline-flex items-center gap-1 rounded-lg bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground"
                   >
-                    View →
+                    View <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               ))}
@@ -289,5 +258,43 @@ export default async function DashboardPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+function QuickCard({
+  href,
+  icon,
+  title,
+  desc,
+  tone = "primary",
+  delay = 0,
+}: {
+  href: string
+  icon: React.ReactNode
+  title: string
+  desc: string
+  tone?: "primary" | "success" | "warning"
+  delay?: number
+}) {
+  const toneMap = {
+    primary: "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground",
+    success: "bg-success/10 text-success group-hover:bg-success group-hover:text-white",
+    warning: "bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white",
+  }[tone]
+
+  return (
+    <Link
+      href={href}
+      className={`card-glow group flex flex-col gap-4 p-6 ${IN}`}
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <span className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-300 ${toneMap}`}>
+        {icon}
+      </span>
+      <div>
+        <h3 className="font-bold text-foreground">{title}</h3>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{desc}</p>
+      </div>
+    </Link>
   )
 }

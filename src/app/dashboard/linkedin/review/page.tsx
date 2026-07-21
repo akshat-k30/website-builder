@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { ArrowLeft, ArrowRight, Plus, X, Trash2, AlertCircle, Check, Sparkles, Loader2 } from "lucide-react"
 import type { ExperienceEntry, EducationEntry } from "@/types/linkedin"
 
 interface ProfileData {
@@ -187,7 +188,7 @@ export default function LinkedInReviewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-73px)] bg-background">
+      <div className="min-h-[calc(100vh-64px)] bg-background">
         <div className="max-w-3xl mx-auto px-6 py-12">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-border rounded w-1/3" />
@@ -202,7 +203,7 @@ export default function LinkedInReviewPage() {
 
   if (!profile) {
     return (
-      <div className="min-h-[calc(100vh-73px)] bg-background flex flex-col items-center justify-center">
+      <div className="min-h-[calc(100vh-64px)] bg-background flex flex-col items-center justify-center">
         <div className="max-w-md mx-auto px-6 py-12 text-center bg-card rounded-2xl border border-border shadow-sm p-10">
           <p className="text-muted-foreground mb-6">{error || "No profile data found."}</p>
           <Link
@@ -217,35 +218,35 @@ export default function LinkedInReviewPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-background">
+    <div className="min-h-[calc(100vh-64px)] bg-background">
       <div className="max-w-3xl mx-auto px-6 py-12 pb-32">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground mb-8 transition-colors"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
-          ← Back to Dashboard
+          <ArrowLeft className="h-4 w-4" /> Back to dashboard
         </Link>
 
-        <div className="flex items-start justify-between mb-8">
+        <div className="mb-8 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-foreground">Review Your Profile</h1>
-            <p className="text-muted-foreground text-sm">
+            <h1 className="font-[var(--font-display)] text-3xl font-extrabold tracking-tight text-foreground">Review your profile</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
               Review and edit the data extracted from your LinkedIn PDF. All fields are editable.
             </p>
           </div>
           <button
             onClick={handleClearAll}
-            className="text-sm font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold text-red-500 transition-colors hover:bg-red-500/10"
             title="Remove all details"
           >
-            Clear All
+            <Trash2 className="h-4 w-4" /> Clear all
           </button>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100">
-            <p className="text-sm font-medium text-red-600">{error}</p>
+          <div role="alert" className="mb-6 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-500">
+            <AlertCircle className="h-4 w-4 flex-none" /> {error}
           </div>
         )}
 
@@ -328,10 +329,10 @@ export default function LinkedInReviewPage() {
                   {skill}
                   <button
                     onClick={() => removeSkill(i)}
-                    className="text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-md p-0.5 transition-colors"
+                    className="rounded-md p-0.5 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-500"
                     aria-label={`Remove ${skill}`}
                   >
-                    ×
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </span>
               ))}
@@ -351,10 +352,10 @@ export default function LinkedInReviewPage() {
               />
               <button
                 onClick={addSkill}
-                className="px-6 py-3 rounded-lg border-2 border-border bg-card text-foreground font-bold text-sm hover:border-primary/50 hover:bg-primary/5 transition-colors shadow-sm"
+                className="inline-flex items-center gap-1.5 rounded-lg border-2 border-border bg-card px-6 py-3 text-sm font-bold text-foreground shadow-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                 id="btn-add-skill"
               >
-                Add
+                <Plus className="h-4 w-4" /> Add
               </button>
             </div>
           </div>
@@ -369,10 +370,10 @@ export default function LinkedInReviewPage() {
             </h2>
             <button
               onClick={addExperience}
-              className="text-sm font-bold text-primary hover:text-primary-hover transition-colors"
+              className="inline-flex items-center gap-1 text-sm font-bold text-primary transition-colors hover:text-primary-hover"
               id="btn-add-experience"
             >
-              + Add Entry
+              <Plus className="h-4 w-4" /> Add entry
             </button>
           </div>
           <div className="space-y-6">
@@ -388,9 +389,9 @@ export default function LinkedInReviewPage() {
                   </span>
                   <button
                     onClick={() => removeExperience(i)}
-                    className="text-xs font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition-colors"
+                    className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-bold text-red-500 transition-colors hover:bg-red-500/10"
                   >
-                    Remove
+                    <Trash2 className="h-3.5 w-3.5" /> Remove
                   </button>
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2 pl-2">
@@ -479,10 +480,10 @@ export default function LinkedInReviewPage() {
             </h2>
             <button
               onClick={addEducation}
-              className="text-sm font-bold text-primary hover:text-primary-hover transition-colors"
+              className="inline-flex items-center gap-1 text-sm font-bold text-primary transition-colors hover:text-primary-hover"
               id="btn-add-education"
             >
-              + Add Entry
+              <Plus className="h-4 w-4" /> Add entry
             </button>
           </div>
           <div className="space-y-6">
@@ -498,9 +499,9 @@ export default function LinkedInReviewPage() {
                   </span>
                   <button
                     onClick={() => removeEducation(i)}
-                    className="text-xs font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition-colors"
+                    className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-bold text-red-500 transition-colors hover:bg-red-500/10"
                   >
-                    Remove
+                    <Trash2 className="h-3.5 w-3.5" /> Remove
                   </button>
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2 pl-2">
@@ -546,44 +547,38 @@ export default function LinkedInReviewPage() {
         {/* Action Bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
           <div className="max-w-4xl mx-auto flex items-center justify-between relative">
-            <div className="w-1/3 flex items-center justify-start">
+            <div className="flex w-1/3 items-center justify-start">
               <Link
                 href="/dashboard/linkedin"
-                className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+                className="hidden text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground sm:block"
               >
                 Re-upload PDF
               </Link>
             </div>
-            
-            <div className="w-1/3 flex justify-center">
+
+            <div className="flex w-1/3 justify-center">
               <Link
                 href="/dashboard/generate?auto=true"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm text-primary-foreground bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-[0.98] whitespace-nowrap"
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:-translate-y-0.5 hover:bg-primary-hover"
                 id="btn-generate-content"
               >
-                ✨ Generate Website Content →
+                <Sparkles className="h-4 w-4" /> <span className="hidden sm:inline">Generate website content</span><span className="sm:hidden">Generate</span> <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="w-1/3 flex items-center justify-end gap-4">
+            <div className="flex w-1/3 items-center justify-end gap-3">
               {saved && (
-                <span className="text-sm text-green-600 font-bold bg-green-50 px-3 py-1 rounded-lg">
-                  ✓ Saved
+                <span className="flex items-center gap-1 rounded-lg bg-success/10 px-3 py-1 text-sm font-bold text-success">
+                  <Check className="h-4 w-4" /> Saved
                 </span>
               )}
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`
-                  px-8 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md
-                  ${saving
-                    ? "bg-muted text-muted-foreground cursor-not-allowed shadow-none"
-                    : "bg-card text-foreground border-2 border-border hover:border-primary/50 hover:bg-primary/5 active:scale-[0.98]"
-                  }
-                `}
+                className="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-8 py-2.5 text-sm font-bold text-foreground shadow-sm transition-all hover:enabled:border-primary/50 hover:enabled:bg-primary/5 disabled:opacity-50"
                 id="btn-save"
               >
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : "Save changes"}
               </button>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { Sparkles, Loader2, AlertCircle, ArrowLeft, RefreshCw, ArrowRight } from "lucide-react"
 import type { WebsiteContent } from "@/types/website"
 
 type PageStatus = "loading" | "empty" | "generating" | "ready" | "error"
@@ -126,7 +127,7 @@ export default function GenerateContentPage() {
   // Loading state
   if (status === "loading") {
     return (
-      <div className="min-h-[calc(100vh-73px)] bg-background py-12">
+      <div className="min-h-[calc(100vh-64px)] bg-background py-12">
         <div className="max-w-4xl mx-auto px-6">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-border rounded w-1/3" />
@@ -141,41 +142,37 @@ export default function GenerateContentPage() {
   // Empty state — no content yet
   if (status === "empty" || status === "error") {
     return (
-      <div className="min-h-[calc(100vh-73px)] bg-background flex flex-col items-center justify-center py-20">
+      <div className="min-h-[calc(100vh-64px)] bg-background flex flex-col items-center justify-center py-20">
         <div className="max-w-md mx-auto px-6 text-center">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground mb-12 transition-colors"
+            className="mb-12 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
-            ← Back to Dashboard
+            <ArrowLeft className="h-4 w-4" /> Back to dashboard
           </Link>
 
-          <div className="bg-card p-10 rounded-3xl shadow-xl border border-border">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <svg className="w-10 h-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-              </svg>
+          <div className="rounded-3xl border border-border bg-card p-10 shadow-[var(--shadow-xl)]">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary text-white shadow-[var(--shadow-glow)]">
+              <Sparkles className="h-9 w-9" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground mb-3">Generate Website Content</h1>
-            <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+            <h1 className="mb-3 text-2xl font-bold text-foreground">Generate website content</h1>
+            <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
               Our AI will transform your LinkedIn profile into polished, professional website copy — ready to publish.
             </p>
 
             {error && (
-              <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 text-left">
-                <p className="text-sm font-medium text-red-600">{error}</p>
+              <div role="alert" className="mb-6 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-left text-sm font-medium text-red-500">
+                <AlertCircle className="h-4 w-4 flex-none" /> {error}
               </div>
             )}
 
             <button
               onClick={handleGenerate}
-              className="w-full px-8 py-3.5 rounded-xl font-bold text-primary-foreground bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:-translate-y-0.5 hover:bg-primary-hover"
             >
-              Generate with AI
+              <Sparkles className="h-4 w-4" /> Generate with AI
             </button>
-            <p className="text-xs font-medium text-muted-foreground mt-4">
-              Takes about 10 seconds
-            </p>
+            <p className="mt-4 text-xs font-medium text-muted-foreground">Takes about 10 seconds</p>
           </div>
         </div>
       </div>
@@ -185,16 +182,13 @@ export default function GenerateContentPage() {
   // Generating state
   if (status === "generating") {
     return (
-      <div className="min-h-[calc(100vh-73px)] bg-background flex flex-col items-center justify-center py-20">
+      <div className="min-h-[calc(100vh-64px)] bg-background flex flex-col items-center justify-center py-20">
         <div className="max-w-md mx-auto px-6 text-center">
-          <div className="bg-card p-12 rounded-3xl shadow-xl border border-border flex flex-col items-center">
-            <div className="w-20 h-20 mb-6 rounded-2xl bg-primary/10 flex items-center justify-center animate-pulse">
-              <svg className="w-10 h-10 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
+          <div className="flex flex-col items-center rounded-3xl border border-border bg-card p-12 shadow-[var(--shadow-xl)]">
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <Loader2 className="h-10 w-10 animate-spin" />
             </div>
-            <h2 className="text-xl font-bold text-foreground mb-3">Crafting your content...</h2>
+            <h2 className="mb-3 text-xl font-bold text-foreground">Crafting your content…</h2>
             <p className="text-sm text-muted-foreground mb-8">
               Analyzing your LinkedIn profile and writing professional website copy.
             </p>
@@ -217,33 +211,31 @@ export default function GenerateContentPage() {
   if (!content) return null
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-background">
+    <div className="min-h-[calc(100vh-64px)] bg-background">
       <div className="max-w-4xl mx-auto px-6 py-12 pb-32">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground mb-8 transition-colors"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
-          ← Back to Dashboard
+          <ArrowLeft className="h-4 w-4" /> Back to dashboard
         </Link>
 
-        <div className="flex items-start justify-between mb-8">
+        <div className="mb-8 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Review Content</h1>
-            <p className="text-muted-foreground text-sm">
-              Click any section to edit manually, or save to pick a template.
-            </p>
+            <h1 className="font-[var(--font-display)] text-3xl font-extrabold tracking-tight text-foreground">Review content</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Click any section to edit manually, or save to pick a template.</p>
           </div>
           <button
             onClick={handleGenerate}
-            className="text-sm font-semibold px-4 py-2.5 rounded-lg border border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5 transition-colors shadow-sm"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
           >
-            Regenerate AI
+            <RefreshCw className="h-4 w-4" /> Regenerate
           </button>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100">
-            <p className="text-sm font-medium text-red-600">{error}</p>
+          <div role="alert" className="mb-6 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-500">
+            <AlertCircle className="h-4 w-4 flex-none" /> {error}
           </div>
         )}
 
@@ -407,7 +399,7 @@ export default function GenerateContentPage() {
                     {cat.items.map((skill, j) => (
                       <span
                         key={j}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-border text-foreground shadow-sm"
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-card border border-border text-foreground shadow-sm"
                       >
                         {skill}
                       </span>
@@ -488,23 +480,17 @@ export default function GenerateContentPage() {
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <Link
               href="/dashboard/linkedin/review"
-              className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+              className="hidden items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground sm:flex"
             >
-              ← Edit Profile Data
+              <ArrowLeft className="h-4 w-4" /> Edit profile data
             </Link>
-            
+
             <button
               onClick={handleSave}
               disabled={saving}
-              className={`
-                px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-md
-                ${saving
-                  ? "bg-muted text-muted-foreground cursor-not-allowed shadow-none"
-                  : "bg-primary text-primary-foreground hover:bg-primary-hover shadow-primary/25 active:scale-[0.98]"
-                }
-              `}
+              className="flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:enabled:-translate-y-0.5 hover:enabled:bg-primary-hover disabled:opacity-50 disabled:shadow-none"
             >
-              {saving ? "Saving..." : "Save & Choose Template →"}
+              {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : <>Save &amp; choose template <ArrowRight className="h-4 w-4" /></>}
             </button>
           </div>
         </div>

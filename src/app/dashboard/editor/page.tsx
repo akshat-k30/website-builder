@@ -1,7 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
+import { AlertTriangle, Lock, Circle, Loader2, Check } from "lucide-react"
 import { WebsiteContent } from "@/types/website"
 import EditorSidebar from "@/components/editor/EditorSidebar"
 import LivePreview from "@/components/editor/LivePreview"
@@ -21,17 +23,20 @@ export default function EditorPage() {
   const [templateId, setTemplateId] = useState<string>("modern-minimal")
   const [websiteStatus, setWebsiteStatus] = useState<string>("draft")
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null)
-  
+
   // AI Undo history
   const [history, setHistory] = useState<{ content: WebsiteContent; theme: TemplateTheme }[]>([])
   const [activeSection, setActiveSection] = useState<SectionType>("hero")
+
+  // Auto-save: ensures the DB always matches the preview so Publish is never stale
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle")
+  const hydrated = useRef(false)
 
   useEffect(() => {
     async function fetchData() {
       try {
         const res = await fetch("/api/website")
         if (res.status === 404) {
-          // No website yet, gracefully handle it
           setIsLoading(false)
           return
         }
@@ -40,7 +45,7 @@ export default function EditorPage() {
           return
         }
         const data = await res.json()
-        
+
         setContent(data.content)
         setAiContent(data.aiContent)
         setTheme(data.themeSettings)
@@ -56,6 +61,31 @@ export default function EditorPage() {
     fetchData()
   }, [])
 
+  // Debounced auto-save on any content/theme change (skips the initial hydration)
+  useEffect(() => {
+    if (!content || !theme) return
+    if (!hydrated.current) {
+      hydrated.current = true
+      return
+    }
+    setSaveState("saving")
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/website", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content, themeSettings: theme }),
+        })
+        if (!res.ok) throw new Error("Failed to auto-save")
+        setSaveState("saved")
+      } catch (err) {
+        console.error(err)
+        setSaveState("idle")
+      }
+    }, 900)
+    return () => clearTimeout(timer)
+  }, [content, theme])
+
   const handleSave = async () => {
     setIsSaving(true)
     try {
@@ -65,9 +95,10 @@ export default function EditorPage() {
         body: JSON.stringify({ content, themeSettings: theme }),
       })
       if (!res.ok) throw new Error("Failed to save")
-      alert("Saved successfully!")
+      setSaveState("saved")
     } catch (err) {
       console.error(err)
+      setSaveState("idle")
       alert("Error saving.")
     } finally {
       setIsSaving(false)
@@ -96,7 +127,7 @@ export default function EditorPage() {
     if (section === "theme") {
       setTheme(data)
     } else {
-      setContent((prev) => prev ? { ...prev, [section]: data } : null)
+      setContent((prev) => (prev ? { ...prev, [section]: data } : null))
     }
   }
 
@@ -112,9 +143,7 @@ export default function EditorPage() {
   const handleDelete = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch("/api/website", {
-        method: "DELETE",
-      })
+      const res = await fetch("/api/website", { method: "DELETE" })
       if (!res.ok) throw new Error("Failed to delete website")
       router.push("/dashboard")
     } catch (err) {
@@ -124,45 +153,51 @@ export default function EditorPage() {
     }
   }
 
-  if (isLoading) return <div className="flex h-screen items-center justify-center">Loading editor...</div>
+  if (isLoading) return <EditorSkeleton />
+
   if (!content || !theme) {
     return (
-      <div className="flex flex-col h-[calc(100vh-73px)] items-center justify-center bg-background">
-        <div className="text-center p-12 bg-card rounded-3xl shadow-xl border border-border max-w-md w-full mx-4">
-          <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+      <div className="flex h-[calc(100vh-64px)] flex-col items-center justify-center bg-background px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md rounded-3xl border border-border bg-card p-12 text-center shadow-[var(--shadow-xl)]"
+        >
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <AlertTriangle className="h-8 w-8" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">No Website Found</h2>
-          <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-            You haven&apos;t generated your website yet. Head over to the dashboard to upload your profile and generate your content.
+          <h2 className="mb-2 text-2xl font-bold text-foreground">No website found</h2>
+          <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
+            You haven&apos;t generated your website yet. Upload your profile and generate content to get started.
           </p>
-          <div className="flex flex-col gap-3 w-full">
+          <div className="flex flex-col gap-3">
             <button
               onClick={() => router.push("/dashboard/linkedin")}
-              className="w-full px-6 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all"
+              className="w-full rounded-xl bg-primary px-6 py-3.5 font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:-translate-y-0.5 hover:bg-primary-hover"
             >
-              Start LinkedIn Import
+              Start LinkedIn import
             </button>
             <button
               onClick={() => router.push("/dashboard")}
-              className="w-full px-6 py-3.5 bg-card border-2 border-border text-foreground font-bold rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all"
+              className="w-full rounded-xl border border-border bg-card px-6 py-3.5 font-bold text-foreground transition-all hover:border-primary/40 hover:bg-primary/5"
             >
-              Return to Dashboard
+              Return to dashboard
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     )
   }
 
+  const displayUrl = publishedUrl ? publishedUrl.replace(/^https?:\/\//, "") : "yoursite.websitebuilder.app"
+
   return (
-    <div className="flex h-[calc(100vh-73px)] w-full overflow-hidden bg-background">
-      {/* Left Sidebar: Navigation */}
-      <EditorSidebar 
-        activeSection={activeSection} 
-        onSelectSection={setActiveSection} 
+    <div className="flex h-[calc(100vh-64px)] w-full overflow-hidden bg-background">
+      {/* Left Sidebar */}
+      <EditorSidebar
+        activeSection={activeSection}
+        onSelectSection={setActiveSection}
         onSave={handleSave}
         isSaving={isSaving}
         onRevert={aiContent ? handleRevert : undefined}
@@ -172,38 +207,95 @@ export default function EditorPage() {
       />
 
       {/* Center: Live Preview */}
-      <div className="flex-1 overflow-y-auto bg-muted/30 p-8 relative shadow-inner">
-        {/* Scale container to simulate desktop view on smaller screens if needed */}
-        <div className="w-full max-w-[1200px] mx-auto min-h-[800px] shadow-2xl rounded-2xl overflow-hidden border border-border transition-all bg-card relative">
-          <div className="absolute top-0 left-0 right-0 h-8 bg-muted/80 border-b border-border flex items-center px-4 gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-400"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-            <div className="w-3 h-3 rounded-full bg-green-400"></div>
-            <div className="mx-auto bg-background border border-border rounded-md px-3 py-0.5 text-xs text-muted-foreground font-mono">
-              localhost:3000
+      <div className="relative flex-1 overflow-y-auto bg-gradient-to-b from-muted/40 to-muted/10 p-6 lg:p-8">
+        <div className="relative mx-auto min-h-[800px] w-full max-w-[1200px] overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-xl)]">
+          {/* Browser chrome */}
+          <div className="absolute inset-x-0 top-0 z-10 flex h-10 items-center gap-2 border-b border-border bg-muted/70 px-4 backdrop-blur">
+            <span className="h-3 w-3 rounded-full bg-red-400" />
+            <span className="h-3 w-3 rounded-full bg-yellow-400" />
+            <span className="h-3 w-3 rounded-full bg-green-400" />
+            <div className="mx-auto flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+              <Lock className="h-3 w-3" />
+              <span className="font-mono">{displayUrl}</span>
             </div>
+            <span className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground" aria-live="polite">
+              {saveState === "saving" ? (
+                <><Loader2 className="h-3 w-3 animate-spin" /> Saving…</>
+              ) : saveState === "saved" ? (
+                <><Check className="h-3 w-3 text-success" /> Saved</>
+              ) : null}
+            </span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                websiteStatus === "published" ? "bg-success/15 text-success" : "bg-amber-500/15 text-amber-600"
+              }`}
+            >
+              {websiteStatus === "published" ? "Live" : "Draft"}
+            </span>
           </div>
-          <div className="pt-8 h-full">
+          <div className="h-full pt-10">
             <LivePreview content={content} theme={theme} templateId={templateId} />
           </div>
         </div>
       </div>
 
       {/* Right Sidebar: Editor & AI */}
-      <div className="w-[400px] flex flex-col bg-card border-l border-border overflow-y-auto shadow-[-4px_0_15px_rgba(0,0,0,0.05)] shrink-0">
-        <EditPanel 
-          activeSection={activeSection} 
-          content={content} 
-          theme={theme} 
-          onUpdate={handleUpdateSection} 
-        />
-        <AiPromptPanel 
-          content={content} 
-          theme={theme} 
-          onApply={handleAiUpdate}
-          onUndo={handleUndo}
-          canUndo={history.length > 0}
-        />
+      <div className="flex w-[400px] shrink-0 flex-col overflow-y-auto border-l border-border bg-card shadow-[-8px_0_24px_-16px_rgba(17,24,39,0.2)]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <EditPanel activeSection={activeSection} content={content} theme={theme} onUpdate={handleUpdateSection} />
+          </motion.div>
+        </AnimatePresence>
+        <AiPromptPanel content={content} theme={theme} onApply={handleAiUpdate} onUndo={handleUndo} canUndo={history.length > 0} />
+      </div>
+    </div>
+  )
+}
+
+/* Three-panel loading skeleton */
+function EditorSkeleton() {
+  return (
+    <div className="flex h-[calc(100vh-64px)] w-full overflow-hidden bg-background">
+      {/* left rail */}
+      <div className="hidden w-64 shrink-0 flex-col gap-3 border-r border-border bg-card p-4 sm:flex">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="h-11 rounded-xl bg-muted/70 [animation:pulse_1.6s_ease-in-out_infinite]" style={{ animationDelay: `${i * 90}ms` }} />
+        ))}
+        <div className="mt-auto h-11 rounded-xl bg-muted/70 [animation:pulse_1.6s_ease-in-out_infinite]" />
+      </div>
+      {/* center */}
+      <div className="flex-1 p-8">
+        <div className="mx-auto h-full max-w-[1200px] overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="flex h-10 items-center gap-2 border-b border-border bg-muted/60 px-4">
+            <span className="h-3 w-3 rounded-full bg-muted-foreground/30" />
+            <span className="h-3 w-3 rounded-full bg-muted-foreground/30" />
+            <span className="h-3 w-3 rounded-full bg-muted-foreground/30" />
+          </div>
+          <div className="space-y-6 p-10">
+            <div className="mx-auto h-10 w-2/3 rounded-lg bg-muted/70 [animation:pulse_1.6s_ease-in-out_infinite]" />
+            <div className="mx-auto h-4 w-1/2 rounded bg-muted/60 [animation:pulse_1.6s_ease-in-out_infinite]" />
+            <div className="grid grid-cols-3 gap-4 pt-8">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-28 rounded-xl bg-muted/60 [animation:pulse_1.6s_ease-in-out_infinite]" style={{ animationDelay: `${i * 80}ms` }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* right */}
+      <div className="hidden w-[400px] shrink-0 flex-col gap-4 border-l border-border bg-card p-6 lg:flex">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-14 rounded-xl bg-muted/70 [animation:pulse_1.6s_ease-in-out_infinite]" style={{ animationDelay: `${i * 90}ms` }} />
+        ))}
+        <div className="flex items-center justify-center gap-2 pt-4 text-xs font-medium text-muted-foreground">
+          <Circle className="h-3 w-3 animate-spin" /> Loading editor…
+        </div>
       </div>
     </div>
   )

@@ -4,6 +4,9 @@ import { useState, FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { signIn } from "next-auth/react"
+import { AlertCircle, ArrowRight, Loader2 } from "lucide-react"
+import AuthShell from "@/components/auth/AuthShell"
+import { Field, PasswordField } from "@/components/auth/AuthFields"
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -41,11 +44,7 @@ export default function SignUpPage() {
         return
       }
 
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      })
+      const result = await signIn("credentials", { email, password, redirect: false })
 
       if (result?.error) {
         setError("Account created. Please sign in.")
@@ -62,81 +61,48 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-6 bg-background transition-colors">
-      <div className="w-full max-w-md my-12">
-        <div className="bg-card rounded-2xl shadow-xl border border-border p-8 transition-colors">
-          <div className="text-center mb-8 flex flex-col items-center">
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4 shadow-sm">
-              W
-            </div>
-            <h1 className="text-2xl font-bold text-foreground mb-1">
-              Create an account
-            </h1>
-            <p className="text-sm text-muted-foreground">Start building your portfolio</p>
-          </div>
+    <AuthShell
+      eyebrow="Get started"
+      title="Create your account"
+      subtitle="Start building your portfolio — free, no credit card."
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link href="/login" className="font-bold text-primary transition-colors hover:text-primary-hover">
+            Sign in
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <Field label="Full name" id="name" name="name" type="text" required placeholder="John Doe" autoComplete="name" />
+        <Field label="Email address" id="email" name="email" type="email" required placeholder="you@example.com" autoComplete="email" />
+        <PasswordField id="password" name="password" required minLength={8} placeholder="At least 8 characters" autoComplete="new-password" />
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-foreground mb-1.5">
-                Full Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                placeholder="John Doe"
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-1.5">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                placeholder="you@example.com"
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-foreground mb-1.5">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                minLength={8}
-                placeholder="••••••••"
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-              />
-            </div>
-            {error && (
-              <div className="text-sm text-red-500 bg-red-500/10 px-4 py-2.5 rounded-lg border border-red-500/20 font-medium">
-                {error}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover disabled:opacity-50 shadow-md shadow-primary/20 transition-all active:scale-[0.98]"
-            >
-              {loading ? "Creating account..." : "Create Account →"}
-            </button>
-          </form>
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link href="/login" className="font-bold text-primary hover:text-primary-hover transition-colors">
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
+        {error && (
+          <div role="alert" className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-500">
+            <AlertCircle className="h-4 w-4 flex-none" />
+            {error}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="group flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-glow)] transition-all hover:-translate-y-0.5 hover:bg-primary-hover disabled:translate-y-0 disabled:opacity-60"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" /> Creating account…
+            </>
+          ) : (
+            <>
+              Create account
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </>
+          )}
+        </button>
+      </form>
+    </AuthShell>
   )
 }

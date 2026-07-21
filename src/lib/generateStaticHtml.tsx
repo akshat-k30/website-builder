@@ -1,19 +1,25 @@
 import { renderToString } from "react-dom/server.browser"
+import type { ComponentType } from "react"
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 
 // We must import the templates directly (not via next/dynamic) for server-side rendering to string
 import ModernMinimal from "@/components/templates/ModernMinimal"
-// Temporarily use ModernMinimal for all to test publish fix
-const BoldDeveloper = ModernMinimal
-const CreativePortfolio = ModernMinimal
-const ExecutivePro = ModernMinimal
+import BoldDeveloper from "@/components/templates/BoldDeveloper"
+import CreativePortfolio from "@/components/templates/CreativePortfolio"
+import ExecutivePro from "@/components/templates/ExecutivePro"
+import AuroraGradient from "@/components/templates/AuroraGradient"
+import NoirLuxe from "@/components/templates/NoirLuxe"
 
-const templateMap: Record<string, any> = {
+type TemplateComponent = ComponentType<{ content: WebsiteContent; theme: TemplateTheme }>
+
+const templateMap: Record<string, TemplateComponent> = {
   "modern-minimal": ModernMinimal,
   "bold-developer": BoldDeveloper,
   "creative-portfolio": CreativePortfolio,
   "executive-pro": ExecutivePro,
+  "aurora-gradient": AuroraGradient,
+  "noir-luxe": NoirLuxe,
 }
 
 export function generateStaticHtml(

@@ -12,6 +12,8 @@ const templateMap: Record<string, ComponentType<{ content: WebsiteContent; theme
   "bold-developer": dynamic(() => import("@/components/templates/BoldDeveloper"), { ssr: false }),
   "creative-portfolio": dynamic(() => import("@/components/templates/CreativePortfolio"), { ssr: false }),
   "executive-pro": dynamic(() => import("@/components/templates/ExecutivePro"), { ssr: false }),
+  "aurora-gradient": dynamic(() => import("@/components/templates/AuroraGradient"), { ssr: false }),
+  "noir-luxe": dynamic(() => import("@/components/templates/NoirLuxe"), { ssr: false }),
 }
 
 interface LivePreviewProps {

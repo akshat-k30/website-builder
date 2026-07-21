@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Sparkles, Send, Loader2, Undo2 } from "lucide-react"
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
 
@@ -12,13 +13,14 @@ interface AiPromptPanelProps {
   canUndo: boolean
 }
 
+const SUGGESTIONS = ["Make my tagline more professional", "Rewrite the about section", "Switch to a dark color scheme"]
+
 export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo }: AiPromptPanelProps) {
   const [prompt, setPrompt] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   const handlePrompt = async () => {
     if (!prompt.trim()) return
-
     setIsLoading(true)
     try {
       const res = await fetch("/api/ai-edit", {
@@ -26,15 +28,11 @@ export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, currentContent: content, themeSettings: theme }),
       })
-
       if (!res.ok) throw new Error("Failed AI edit")
-
       const data = await res.json()
-      
-      // Basic validation
       if (data.content && data.themeSettings) {
         onApply(data.content, data.themeSettings)
-        setPrompt("") // clear prompt on success
+        setPrompt("")
       } else {
         throw new Error("Invalid response from AI")
       }
@@ -47,48 +45,57 @@ export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo
   }
 
   return (
-    <div className="flex flex-col border-t border-border bg-card p-5 shrink-0 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.05)] z-20 relative">
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-          ✨ Edit with AI
+    <div className="relative z-20 shrink-0 border-t border-border bg-gradient-to-b from-primary/[0.04] to-transparent p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-primary to-secondary text-white">
+            <Sparkles className="h-3.5 w-3.5" />
+          </span>
+          Edit with AI
         </h3>
         {canUndo && (
-          <button 
+          <button
             onClick={onUndo}
-            className="text-xs px-3 py-1.5 font-bold bg-muted text-muted-foreground rounded-lg hover:bg-primary/10 hover:text-primary transition-colors border border-border"
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-bold text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
           >
-            ↩ Undo Last
+            <Undo2 className="h-3.5 w-3.5" /> Undo
           </button>
         )}
       </div>
-      
+
       <div className="relative">
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="e.g., Make my tagline sound more professional..."
-          className="w-full h-24 p-4 pr-12 text-sm font-medium bg-background border border-border rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none text-foreground shadow-inner transition-colors"
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") handlePrompt()
+          }}
+          placeholder="Describe a change… e.g., make my tagline sound more confident"
+          className="h-24 w-full resize-none rounded-xl border border-border bg-background p-4 pr-12 text-sm font-medium text-foreground shadow-inner outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/15"
           disabled={isLoading}
         />
         <button
           onClick={handlePrompt}
           disabled={isLoading || !prompt.trim()}
-          className="absolute right-3 bottom-4 p-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover disabled:opacity-50 transition-all shadow-md active:scale-[0.95]"
-          title="Send to AI"
+          className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md transition-all hover:bg-primary-hover active:scale-95 disabled:opacity-50"
+          title="Send to AI (⌘/Ctrl + Enter)"
         >
-          {isLoading ? (
-             <svg className="animate-spin h-5 w-5 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          )}
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </button>
       </div>
-      <p className="text-xs font-semibold text-muted-foreground mt-3">
-        Try: &ldquo;Change colors to dark mode&rdquo; or &ldquo;Rewrite the about section&rdquo;
-      </p>
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {SUGGESTIONS.map((s) => (
+          <button
+            key={s}
+            onClick={() => setPrompt(s)}
+            disabled={isLoading}
+            className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary disabled:opacity-50"
+          >
+            {s}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
