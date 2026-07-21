@@ -3,11 +3,57 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront"
 import { generateStaticHtml } from "@/lib/generateStaticHtml"
 
 // Validate subdomain format: 3-30 chars, lowercase alphanumeric + hyphens, no leading/trailing hyphens
 function isValidSubdomain(subdomain: string): boolean {
   return /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/.test(subdomain)
+}
+
+/**
+ * Flush the CloudFront edge cache for a subdomain so a (re)published or
+ * unpublished site is served fresh immediately instead of a stale cached copy.
+ * No-ops if CLOUDFRONT_DISTRIBUTION_ID isn't configured, and never throws
+ * (a failed invalidation must not fail the publish itself).
+ */
+async function invalidateCloudFront(subdomain: string): Promise<void> {
+  const distributionId = process.env.CLOUDFRONT_DISTRIBUTION_ID
+  if (!distributionId) {
+    console.warn(
+      "[publish] CLOUDFRONT_DISTRIBUTION_ID is not set — SKIPPING CloudFront invalidation. " +
+        "S3 has the new file, but CloudFront will keep serving the cached (old) copy until its TTL expires. " +
+        "Set CLOUDFRONT_DISTRIBUTION_ID in .env and RESTART the dev server."
+    )
+    return
+  }
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+    console.warn("[publish] AWS credentials missing — skipping CloudFront invalidation.")
+    return
+  }
+  try {
+    const cf = new CloudFrontClient({
+      region: process.env.AWS_REGION || "us-east-1",
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+    })
+    const result = await cf.send(
+      new CreateInvalidationCommand({
+        DistributionId: distributionId,
+        InvalidationBatch: {
+          CallerReference: `${subdomain}-${Date.now()}`,
+          Paths: { Quantity: 1, Items: [`/${subdomain}/*`] },
+        },
+      })
+    )
+    console.log(
+      `[publish] CloudFront invalidation created for "/${subdomain}/*" on distribution ${distributionId} — id: ${result.Invalidation?.Id}, status: ${result.Invalidation?.Status}`
+    )
+  } catch (err) {
+    console.error("[publish] CloudFront invalidation FAILED (site was still updated in S3):", err)
+  }
 }
 
 /**
@@ -109,8 +155,14 @@ export async function POST(request: Request) {
           Key: objectKey,
           Body: htmlString,
           ContentType: "text/html",
+          // Short edge cache + revalidate: a safety net so updates surface quickly
+          // even if invalidation isn't configured, while still allowing CDN caching.
+          CacheControl: "public, max-age=60, must-revalidate",
         })
       )
+
+      // Flush the CloudFront cache so the new template/content is served immediately.
+      await invalidateCloudFront(normalizedSubdomain)
 
       publishedUrl = `${cloudfrontDomain.replace(/\/$/, "")}/${normalizedSubdomain}/index.html`
     } else {
@@ -195,6 +247,8 @@ export async function DELETE() {
             Key: objectKey,
           })
         )
+        // Flush the cache so visitors stop seeing the (now-deleted) cached page.
+        await invalidateCloudFront(user.website.subdomain)
       } catch (s3Error) {
         console.error("Failed to delete from S3:", s3Error)
         // We continue with database unpublish even if S3 fails
