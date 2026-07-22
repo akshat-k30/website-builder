@@ -2,6 +2,7 @@
 
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { sanitizeContent } from "@/lib/sanitize"
 import dynamic from "next/dynamic"
 import { useEffect } from "react"
 import type { ComponentType } from "react"
@@ -76,7 +77,7 @@ export default function LivePreview({ content, theme, templateId }: LivePreviewP
         To isolate styles, the template components should use inline styles 
         driven by the `theme` prop.
       */}
-      <TemplateComponent content={content} theme={theme} />
+      <TemplateComponent content={sanitizeContent(content)} theme={theme} />
     </div>
   )
 }

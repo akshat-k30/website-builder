@@ -18,7 +18,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Prompt and current content are required" }, { status: 400 })
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      // JSON mode returns raw parseable JSON (no markdown fences); the token cap
+      // keeps large-profile responses from silently truncating into invalid JSON.
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.7,
+        maxOutputTokens: 8192,
+      },
+    })
 
     const systemPrompt = `You are an expert web designer and copywriter AI assistant.
 You are given the current content (JSON) and theme settings (JSON) of a user's personal website.
@@ -58,7 +67,11 @@ Rules:
 4. If a section is removed by the user request, you still MUST include the full schema structure (just empty the arrays/strings if necessary).
 5. Colors must be valid hex codes. Fonts should be common web fonts (e.g., 'Inter, sans-serif', 'Roboto', 'Arial').`
 
-    const result = await model.generateContent(systemPrompt)
+    // Hard server-side timeout so a stalled Gemini call can't hang the request.
+    const result = await Promise.race([
+      model.generateContent(systemPrompt),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("AI request timed out")), 40000)),
+    ])
     let jsonText = result.response.text().trim()
     if (jsonText.startsWith("```")) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "")

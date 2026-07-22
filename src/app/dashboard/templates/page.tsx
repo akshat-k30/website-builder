@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Loader2, ArrowRight, Check } from "lucide-react"
 import { availableTemplates, TemplateDefinition } from "@/lib/templates"
+import TemplatePreview from "@/components/TemplatePreview"
 
 export default function TemplatesPage() {
   const router = useRouter()
@@ -57,36 +58,10 @@ export default function TemplatesPage() {
                 transition={{ delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-md)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-xl)]"
               >
-                {/* Stylized preview built from the template's own theme */}
-                <div
-                  className="relative h-48 overflow-hidden border-b border-border p-6"
-                  style={{ backgroundColor: theme.backgroundColor }}
-                >
-                  <div
-                    aria-hidden
-                    className="absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-40 blur-2xl transition-transform duration-500 group-hover:scale-125"
-                    style={{ background: `radial-gradient(circle, ${theme.primaryColor}, transparent 70%)` }}
-                  />
-                  <div className="relative">
-                    <div
-                      className="text-xl font-extrabold tracking-tight"
-                      style={{ color: theme.primaryColor, fontFamily: theme.fontFamily }}
-                    >
-                      {t.name}
-                    </div>
-                    <div className="mt-3 space-y-2">
-                      <div className="h-2.5 w-3/4 rounded-full" style={{ backgroundColor: theme.textColor, opacity: 0.85 }} />
-                      <div className="h-2 w-1/2 rounded-full" style={{ backgroundColor: theme.textColor, opacity: 0.3 }} />
-                    </div>
-                    <div className="mt-5 flex gap-2">
-                      <span className="h-6 w-16 rounded-md" style={{ backgroundColor: theme.primaryColor }} />
-                      <span className="h-6 w-16 rounded-md border" style={{ borderColor: theme.textColor, opacity: 0.3 }} />
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {[theme.primaryColor, theme.secondaryColor, theme.textColor].map((c, ci) => (
-                        <span key={ci} className="h-4 w-4 rounded-full ring-1 ring-black/10" style={{ backgroundColor: c }} />
-                      ))}
-                    </div>
+                {/* Generated preview of the template's actual landing hero */}
+                <div className="relative h-48 overflow-hidden border-b border-border">
+                  <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-[1.03]">
+                    <TemplatePreview templateId={t.id} theme={theme} />
                   </div>
                 </div>
 

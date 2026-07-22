@@ -1,5 +1,6 @@
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { safeUrl } from "@/lib/sanitize"
 
 interface TemplateProps {
   content: WebsiteContent
@@ -15,18 +16,14 @@ interface TemplateProps {
 export default function NoirLuxe({ content, theme }: TemplateProps) {
   const { hero, about, experience, skills, contact } = content
 
-  // Ensure a dark canvas regardless of incoming theme.
-  const bg = isLight(theme.backgroundColor) ? "#0e0e10" : theme.backgroundColor
-  const tx = isLight(theme.backgroundColor) ? "#ece8e1" : theme.textColor
-
   const rootVars = {
     "--p": theme.primaryColor,
     "--s": theme.secondaryColor,
-    "--bg": bg,
-    "--tx": tx,
-    backgroundColor: bg,
-    color: tx,
-    fontFamily: `'Public Sans', ${theme.fontFamily}, sans-serif`,
+    "--bg": theme.backgroundColor,
+    "--tx": theme.textColor,
+    backgroundColor: theme.backgroundColor,
+    color: theme.textColor,
+    fontFamily: theme.fontFamily,
   } as React.CSSProperties
 
   return (
@@ -127,7 +124,7 @@ export default function NoirLuxe({ content, theme }: TemplateProps) {
           <p className="nl-contact-msg css-reveal rv-up" style={{ animationDelay: ".08s" }}>{contact.message}</p>
           <div className="nl-contact-links css-reveal rv-up" style={{ animationDelay: ".16s" }}>
             {contact.email && <a href={`mailto:${contact.email}`} className="nl-link">{contact.email}</a>}
-            {contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer" className="nl-link">LinkedIn</a>}
+            {contact.linkedin && <a href={safeUrl(contact.linkedin)} target="_blank" rel="noreferrer" className="nl-link">LinkedIn</a>}
           </div>
         </div>
       </section>
@@ -138,13 +135,6 @@ export default function NoirLuxe({ content, theme }: TemplateProps) {
       </footer>
     </div>
   )
-}
-
-function isLight(hex: string) {
-  const h = hex.replace("#", "")
-  if (h.length < 6) return true
-  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16)
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 150
 }
 
 const NL_CSS = `
@@ -181,7 +171,7 @@ const NL_CSS = `
 .nl-btn:hover { background: var(--p); color: var(--bg); }
 
 /* Divider */
-.nl-divider { height: 1px; background: color-mix(in srgb, var(--tx) 18%, transparent); transform-origin: left; }
+.nl-divider { height: 1px; background: linear-gradient(90deg, var(--p), var(--s)); transform-origin: left; }
 .nl-divider.is-visible { animation: nlLine 1.1s cubic-bezier(.22,1,.36,1) forwards; }
 @keyframes nlLine { from { transform: scaleX(0);} to { transform: scaleX(1);} }
 
@@ -201,7 +191,7 @@ const NL_CSS = `
 .nl-exp:first-child { border-top: none; padding-top: 0; }
 @media (max-width: 640px){ .nl-exp { grid-template-columns: 1fr; gap: 10px; } }
 .nl-exp-left { display: flex; flex-direction: column; gap: 6px; }
-.nl-exp-num { font-family: 'Libre Bodoni'; font-size: 30px; font-weight: 600; color: var(--p); line-height: 1; }
+.nl-exp-num { font-family: 'Libre Bodoni'; font-size: 30px; font-weight: 600; color: var(--s); line-height: 1; }
 .nl-exp-period { font-size: 13px; letter-spacing: .06em; color: color-mix(in srgb, var(--tx) 55%, transparent); }
 .nl-exp-role { font-family: 'Libre Bodoni'; font-size: clamp(22px, 3vw, 30px); font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 .nl-exp-co { font-size: 15px; color: var(--p); margin: 4px 0 16px; font-weight: 500; }
@@ -211,7 +201,7 @@ const NL_CSS = `
 
 /* Skills */
 .nl-skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; }
-.nl-skill { border-top: 1px solid color-mix(in srgb, var(--p) 40%, transparent); padding-top: 20px; }
+.nl-skill { border-top: 2px solid var(--s); padding-top: 20px; }
 .nl-skill-name { font-family: 'Libre Bodoni'; font-size: 20px; font-weight: 600; margin: 0 0 16px; }
 .nl-skill-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .nl-skill-items li { font-size: 14.5px; color: color-mix(in srgb, var(--tx) 72%, transparent); transition: color .2s, transform .2s; }

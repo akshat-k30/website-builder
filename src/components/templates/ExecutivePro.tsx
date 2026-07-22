@@ -1,5 +1,6 @@
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { safeUrl } from "@/lib/sanitize"
 
 interface TemplateProps {
   content: WebsiteContent
@@ -137,7 +138,7 @@ export default function ExecutivePro({ content, theme }: TemplateProps) {
             <p className="ep-contact-msg css-reveal rv-up" style={{ animationDelay: ".08s" }}>{contact.message}</p>
             <div className="ep-contact-actions css-reveal rv-up" style={{ animationDelay: ".16s" }}>
               {contact.email && <a href={`mailto:${contact.email}`} className="ep-btn">{contact.email}</a>}
-              {contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer" className="ep-btn ep-btn-outline">LinkedIn ↗</a>}
+              {contact.linkedin && <a href={safeUrl(contact.linkedin)} target="_blank" rel="noreferrer" className="ep-btn ep-btn-outline">LinkedIn ↗</a>}
             </div>
           </section>
 
@@ -180,7 +181,7 @@ const EP_CSS = `
 .ep-block { padding: clamp(48px, 7vw, 96px) 0; scroll-margin-top: 24px; }
 .ep-block:not(:last-child) { border-bottom: 1px solid color-mix(in srgb, var(--tx) 8%, transparent); }
 .ep-block-title { display: flex; align-items: center; gap: 14px; font-size: clamp(20px, 3vw, 28px); font-weight: 800; letter-spacing: -0.01em; margin: 0 0 32px; }
-.ep-block-bar { width: 26px; height: 3px; border-radius: 2px; background: var(--p); }
+.ep-block-bar { width: 26px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--p), var(--s)); }
 
 /* Hero */
 .ep-hero { position: relative; padding: clamp(64px, 10vw, 120px) 0 clamp(48px, 6vw, 80px); scroll-margin-top: 24px; }
@@ -205,7 +206,7 @@ const EP_CSS = `
 
 /* Timeline */
 .ep-timeline { position: relative; padding-left: 34px; }
-.ep-timeline-line { position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; transform-origin: top; background: linear-gradient(180deg, var(--p), color-mix(in srgb, var(--p) 15%, transparent)); }
+.ep-timeline-line { position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; transform-origin: top; background: linear-gradient(180deg, var(--p), var(--s)); }
 .ep-timeline-line.is-visible { animation: epDraw 1s cubic-bezier(.22,1,.36,1) forwards; }
 @keyframes epDraw { from { transform: scaleY(0);} to { transform: scaleY(1);} }
 .ep-tl-item { position: relative; padding-bottom: 28px; }

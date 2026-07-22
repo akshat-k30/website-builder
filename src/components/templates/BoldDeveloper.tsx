@@ -1,5 +1,6 @@
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { safeUrl } from "@/lib/sanitize"
 
 interface TemplateProps {
   content: WebsiteContent
@@ -15,18 +16,14 @@ interface TemplateProps {
 export default function BoldDeveloper({ content, theme }: TemplateProps) {
   const { hero, about, experience, skills, contact } = content
 
-  // Force a dark canvas even if the incoming theme is light.
-  const bg = isLight(theme.backgroundColor) ? "#0b0f19" : theme.backgroundColor
-  const tx = isLight(theme.backgroundColor) ? "#e5e9f0" : theme.textColor
-
   const rootVars = {
     "--p": theme.primaryColor,
     "--s": theme.secondaryColor,
-    "--bg": bg,
-    "--tx": tx,
-    backgroundColor: bg,
-    color: tx,
-    fontFamily: `'Fira Code', ${theme.fontFamily}, monospace`,
+    "--bg": theme.backgroundColor,
+    "--tx": theme.textColor,
+    backgroundColor: theme.backgroundColor,
+    color: theme.textColor,
+    fontFamily: theme.fontFamily,
   } as React.CSSProperties
 
   const firstName = hero.name.split(" ")[0] || hero.name
@@ -68,6 +65,12 @@ export default function BoldDeveloper({ content, theme }: TemplateProps) {
       {/* Hero */}
       <header className="bd-hero">
         <div className="bd-hero-copy">
+          {hero.photoUrl && (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={hero.photoUrl} alt={hero.name} className="bd-avatar css-reveal rv-scale" />
+            </>
+          )}
           <p className="bd-prompt css-reveal rv-up"><span className="bd-dollar">$</span> whoami</p>
           <h1 className="bd-name css-reveal rv-up" style={{ animationDelay: ".08s" }}>{hero.name}</h1>
           <p className="bd-typing-line"><span className="bd-typing" style={typingStyle}>{hero.tagline}</span></p>
@@ -142,7 +145,7 @@ export default function BoldDeveloper({ content, theme }: TemplateProps) {
         <p className="bd-contact-msg css-reveal rv-up" style={{ animationDelay: ".08s" }}>{contact.message}</p>
         <div className="bd-contact-btns css-reveal rv-up" style={{ animationDelay: ".16s" }}>
           {contact.email && <a href={`mailto:${contact.email}`} className="bd-btn">{contact.email}</a>}
-          {contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer" className="bd-btn bd-btn-ghost">LinkedIn ↗</a>}
+          {contact.linkedin && <a href={safeUrl(contact.linkedin)} target="_blank" rel="noreferrer" className="bd-btn bd-btn-ghost">LinkedIn ↗</a>}
         </div>
       </section>
 
@@ -152,12 +155,6 @@ export default function BoldDeveloper({ content, theme }: TemplateProps) {
 }
 
 /* helpers */
-function isLight(hex: string) {
-  const h = hex.replace("#", "")
-  if (h.length < 6) return true
-  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16)
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 150
-}
 function truncate(s: string, n: number) { return s.length > n ? s.slice(0, n).trimEnd() + "…" : s }
 function slug(s: string) { return s.toLowerCase().replace(/\s+/g, "-") }
 
@@ -195,12 +192,13 @@ const BD_CSS = `
 /* Hero */
 .bd-hero { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: clamp(40px, 8vw, 90px) 24px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
 @media (max-width: 900px){ .bd-hero { grid-template-columns: 1fr; } }
+.bd-avatar { display: block; width: 84px; height: 84px; border-radius: 14px; object-fit: cover; margin-bottom: 22px; border: 2px solid var(--p); box-shadow: 0 0 26px -6px color-mix(in srgb, var(--p) 65%, transparent); }
 .bd-prompt { font-size: 14px; color: color-mix(in srgb, var(--tx) 55%, transparent); margin: 0 0 12px; }
 .bd-dollar { color: #27c93f; margin-right: 8px; }
 .bd-name { font-family: 'Space Grotesk', sans-serif; font-size: clamp(40px, 7vw, 76px); font-weight: 700; line-height: 1; margin: 0; letter-spacing: -0.02em;
   background: linear-gradient(120deg, var(--p), var(--s)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 .bd-typing-line { margin: 18px 0 0; height: 1.5em; }
-.bd-typing { display: inline-block; overflow: hidden; white-space: nowrap; border-right: .12em solid var(--p); font-size: clamp(15px, 2.4vw, 22px); font-weight: 500; color: color-mix(in srgb, var(--tx) 85%, transparent); max-width: 100%; }
+.bd-typing { display: inline-block; overflow: hidden; white-space: nowrap; border-right: .12em solid var(--p); font-family: 'Fira Code', monospace; font-size: clamp(15px, 2.4vw, 22px); font-weight: 500; color: color-mix(in srgb, var(--tx) 85%, transparent); max-width: 100%; }
 @keyframes bdType { to { width: var(--ch); } }
 @keyframes bdBlink { 50% { border-color: transparent; } }
 .bd-about { margin: 22px 0 0; max-width: 460px; font-size: 15px; line-height: 1.7; color: color-mix(in srgb, var(--tx) 60%, transparent); }
@@ -215,7 +213,7 @@ const BD_CSS = `
 .bd-window-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #0a0e17; border-bottom: 1px solid color-mix(in srgb, var(--tx) 8%, transparent); }
 .bd-dot { width: 12px; height: 12px; border-radius: 50%; }
 .bd-window-title { margin-left: 10px; font-size: 12px; color: color-mix(in srgb, var(--tx) 45%, transparent); }
-.bd-code { margin: 0; padding: 22px; font-size: 13.5px; line-height: 1.75; overflow-x: auto; color: #c9d1d9; }
+.bd-code { margin: 0; padding: 22px; font-family: 'Fira Code', monospace; font-size: 13.5px; line-height: 1.75; overflow-x: auto; color: #c9d1d9; }
 .c-key { color: #ff7b72; } .c-var { color: #79c0ff; } .c-op { color: #ff7b72; } .c-prop { color: #7ee787; }
 .c-str { color: #a5d6ff; } .c-bool { color: #ffa657; } .c-fn { color: #d2a8ff; }
 

@@ -1,5 +1,6 @@
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { safeUrl } from "@/lib/sanitize"
 
 interface TemplateProps {
   content: WebsiteContent
@@ -22,7 +23,7 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
     "--tx": theme.textColor,
     backgroundColor: theme.backgroundColor,
     color: theme.textColor,
-    fontFamily: `'Inter', ${theme.fontFamily}`,
+    fontFamily: theme.fontFamily,
   } as React.CSSProperties
 
   return (
@@ -62,7 +63,6 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
         <div className="mm-hero-inner">
           {hero.photoUrl && (
             <div className="mm-photo-wrap css-reveal rv-scale">
-              <div className="mm-photo-blob" aria-hidden="true" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={hero.photoUrl} alt={hero.name} className="mm-photo" />
             </div>
@@ -158,7 +158,7 @@ export default function ModernMinimal({ content, theme }: TemplateProps) {
                 <a href={`mailto:${contact.email}`} className="mm-btn mm-btn-invert">{contact.email}</a>
               )}
               {contact.linkedin && (
-                <a href={contact.linkedin} target="_blank" rel="noreferrer" className="mm-btn mm-btn-outline-invert">LinkedIn</a>
+                <a href={safeUrl(contact.linkedin)} target="_blank" rel="noreferrer" className="mm-btn mm-btn-outline-invert">LinkedIn</a>
               )}
             </div>
           </div>
@@ -237,9 +237,7 @@ const MM_CSS = `
 .mm-hero { position: relative; z-index: 2; min-height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px 80px; }
 .mm-hero-inner { max-width: 860px; }
 .mm-photo-wrap { position: relative; width: 132px; height: 132px; margin: 0 auto 32px; }
-.mm-photo-blob { position: absolute; inset: -10px; background: linear-gradient(135deg, var(--p), var(--s)); animation: mmMorph 8s ease-in-out infinite; filter: blur(2px); opacity: .9; }
-.mm-photo { position: relative; z-index: 1; width: 132px; height: 132px; object-fit: cover; border-radius: 30% 70% 62% 38% / 42% 40% 60% 58%; animation: mmMorph 8s ease-in-out infinite; border: 3px solid var(--bg); }
-@keyframes mmMorph { 0%,100%{border-radius:30% 70% 62% 38%/42% 40% 60% 58%;} 50%{border-radius:62% 38% 40% 60%/54% 62% 38% 46%;} }
+.mm-photo { display: block; width: 132px; height: 132px; object-fit: cover; border-radius: 50%; border: 3px solid var(--bg); box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--p) 45%, transparent), 0 0 0 1px color-mix(in srgb, var(--tx) 8%, transparent); }
 .mm-eyebrow { text-transform: uppercase; letter-spacing: 0.32em; font-size: 12px; font-weight: 700; color: var(--p); margin: 0 0 20px; }
 .mm-title { margin: 0; font-family: 'Outfit', sans-serif; line-height: 1.02; letter-spacing: -0.03em; }
 .mm-name { display: block; font-size: clamp(40px, 8vw, 88px); font-weight: 900;
@@ -328,7 +326,7 @@ const MM_CSS = `
 @keyframes mmScale { from { opacity:0; transform: scale(.94);} to { opacity:1; transform:none;} }
 
 @media (prefers-reduced-motion: reduce) {
-  .css-reveal, .mm-orb, .mm-name, .mm-photo, .mm-photo-blob, .mm-scroll-hint span { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .css-reveal, .mm-orb, .mm-name, .mm-scroll-hint span { animation: none !important; opacity: 1 !important; transform: none !important; }
   .mm-name { -webkit-text-fill-color: initial; color: var(--p); }
 }
 `

@@ -2,6 +2,7 @@
 
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { sanitizeContent } from "@/lib/sanitize"
 import dynamic from "next/dynamic"
 import { useEffect } from "react"
 import type { ComponentType } from "react"
@@ -55,7 +56,7 @@ export default function PublishedSiteRenderer({ content, theme, templateId }: Pr
 
   return (
     <div className="min-h-screen">
-      <TemplateComponent content={content} theme={theme} />
+      <TemplateComponent content={sanitizeContent(content)} theme={theme} />
       {/* Powered by footer */}
       <div
         className="py-3 text-center text-[11px] font-semibold tracking-wide opacity-40"

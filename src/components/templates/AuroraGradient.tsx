@@ -1,5 +1,6 @@
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { safeUrl } from "@/lib/sanitize"
 
 interface TemplateProps {
   content: WebsiteContent
@@ -23,7 +24,7 @@ export default function AuroraGradient({ content, theme }: TemplateProps) {
     "--tx": theme.textColor,
     backgroundColor: theme.backgroundColor,
     color: theme.textColor,
-    fontFamily: `'Manrope', ${theme.fontFamily}, sans-serif`,
+    fontFamily: theme.fontFamily,
   } as React.CSSProperties
 
   return (
@@ -49,6 +50,12 @@ export default function AuroraGradient({ content, theme }: TemplateProps) {
       {/* Hero */}
       <header id="top" className="au-hero">
         <div className="au-hero-inner">
+          {hero.photoUrl && (
+            <div className="au-hero-avatar">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={hero.photoUrl} alt={hero.name} />
+            </div>
+          )}
           <span className="au-badge css-reveal rv-up">{about.title}</span>
           <h1 className="au-title css-reveal rv-up" style={{ animationDelay: ".08s" }}>
             <span className="au-line">{hero.name}</span>
@@ -59,12 +66,6 @@ export default function AuroraGradient({ content, theme }: TemplateProps) {
             <a href="#work" className="au-btn au-btn-ghost">See my work →</a>
           </div>
         </div>
-        {hero.photoUrl && (
-          <div className="au-hero-photo css-reveal rv-scale" style={{ animationDelay: ".2s" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={hero.photoUrl} alt={hero.name} />
-          </div>
-        )}
       </header>
 
       {/* Skill marquee ribbon */}
@@ -137,7 +138,7 @@ export default function AuroraGradient({ content, theme }: TemplateProps) {
             <p>{contact.message}</p>
             <div className="au-contact-links">
               {contact.email && <a href={`mailto:${contact.email}`} className="au-btn au-btn-white">{contact.email}</a>}
-              {contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer" className="au-btn au-btn-outline-white">LinkedIn ↗</a>}
+              {contact.linkedin && <a href={safeUrl(contact.linkedin)} target="_blank" rel="noreferrer" className="au-btn au-btn-outline-white">LinkedIn ↗</a>}
             </div>
           </div>
         </div>
@@ -183,8 +184,11 @@ const AU_CSS = `
 @media (max-width: 640px){ .au-nav-links a:not(.au-nav-cta){ display:none; } }
 
 /* Hero */
-.au-hero { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: clamp(48px, 9vw, 110px) 24px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: center; }
-@media (max-width: 820px){ .au-hero { grid-template-columns: 1fr; } }
+.au-hero { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; padding: clamp(48px, 9vw, 110px) 24px; text-align: center; }
+.au-hero-inner { max-width: 780px; margin: 0 auto; }
+.au-hero-avatar { width: 128px; height: 128px; margin: 0 auto 26px; border-radius: 50%; overflow: hidden; border: 3px solid var(--bg);
+  box-shadow: 0 14px 44px -10px color-mix(in srgb, var(--p) 60%, transparent), 0 0 0 3px color-mix(in srgb, var(--p) 35%, transparent); }
+.au-hero-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .au-badge { display: inline-block; padding: 7px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; color: var(--p);
   background: color-mix(in srgb, var(--p) 12%, transparent); border: 1px solid color-mix(in srgb, var(--p) 25%, transparent); margin-bottom: 22px; }
 .au-title { margin: 0; font-family: 'Syne'; font-weight: 800; line-height: .95; letter-spacing: -0.03em; }
@@ -192,11 +196,8 @@ const AU_CSS = `
   background: linear-gradient(115deg, var(--p), var(--s), var(--p)); background-size: 220% auto;
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; animation: auGrad 6s linear infinite; }
 @keyframes auGrad { to { background-position: 220% center; } }
-.au-tagline { font-size: clamp(18px, 2.6vw, 26px); font-weight: 500; color: color-mix(in srgb, var(--tx) 72%, transparent); margin: 22px 0 0; max-width: 540px; line-height: 1.4; }
-.au-cta-row { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
-.au-hero-photo { position: relative; justify-self: center; width: min(320px, 80%); aspect-ratio: 3/4; border-radius: 24px; overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--tx) 10%, transparent); box-shadow: 0 30px 70px -24px color-mix(in srgb, var(--p) 55%, transparent); }
-.au-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.au-tagline { font-size: clamp(18px, 2.6vw, 26px); font-weight: 500; color: color-mix(in srgb, var(--tx) 72%, transparent); margin: 22px auto 0; max-width: 560px; line-height: 1.4; }
+.au-cta-row { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; justify-content: center; }
 
 /* Buttons */
 .au-btn { display: inline-flex; align-items: center; gap: 8px; padding: 15px 28px; border-radius: 14px; font-weight: 700; font-size: 15px; text-decoration: none; color: #fff;

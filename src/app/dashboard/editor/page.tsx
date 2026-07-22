@@ -6,10 +6,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import { AlertTriangle, Lock, Circle, Loader2, Check } from "lucide-react"
 import { WebsiteContent } from "@/types/website"
 import EditorSidebar from "@/components/editor/EditorSidebar"
+import ErrorBoundary from "@/components/ErrorBoundary"
 import LivePreview from "@/components/editor/LivePreview"
 import EditPanel from "@/components/editor/EditPanel"
 import AiPromptPanel from "@/components/editor/AiPromptPanel"
-import { TemplateTheme } from "@/lib/templates"
+import { TemplateTheme, availableTemplates } from "@/lib/templates"
 
 export type SectionType = "hero" | "about" | "experience" | "skills" | "contact" | "theme"
 
@@ -31,6 +32,8 @@ export default function EditorPage() {
   // Auto-save: ensures the DB always matches the preview so Publish is never stale
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle")
   const hydrated = useRef(false)
+  // Undo: coalesces rapid edits (e.g. typing) into a single history step
+  const lastSnapshotAt = useRef(0)
 
   useEffect(() => {
     async function fetchData() {
@@ -105,10 +108,19 @@ export default function EditorPage() {
     }
   }
 
+  // Snapshot the current state onto the undo stack. `debounce` collapses rapid
+  // edits (typing) into one step; capped at 50 entries.
+  const pushSnapshot = (debounce: boolean) => {
+    if (!content || !theme) return
+    const now = Date.now()
+    // Increased debounce time to 2500ms so slow typing is grouped into a single undo step
+    if (debounce && now - lastSnapshotAt.current < 2500) return
+    lastSnapshotAt.current = now
+    setHistory((prev) => [...prev.slice(-49), { content, theme }])
+  }
+
   const handleAiUpdate = (newContent: WebsiteContent, newTheme: TemplateTheme) => {
-    if (content && theme) {
-      setHistory((prev) => [...prev, { content, theme }])
-    }
+    pushSnapshot(false)
     setContent(newContent)
     setTheme(newTheme)
   }
@@ -124,6 +136,7 @@ export default function EditorPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleUpdateSection = (section: SectionType, data: any) => {
+    pushSnapshot(true)
     if (section === "theme") {
       setTheme(data)
     } else {
@@ -131,13 +144,14 @@ export default function EditorPage() {
     }
   }
 
+  // Reset to AI original: restores the AI-generated text AND the selected
+  // template's original colors/theme.
   const handleRevert = () => {
-    if (aiContent) {
-      if (content && theme) {
-        setHistory((prev) => [...prev, { content, theme }])
-      }
-      setContent(aiContent)
-    }
+    if (!aiContent) return
+    pushSnapshot(false)
+    setContent(aiContent)
+    const defaultTheme = availableTemplates.find((t) => t.id === templateId)?.defaultTheme
+    if (defaultTheme) setTheme(defaultTheme)
   }
 
   const handleDelete = async () => {
@@ -234,24 +248,28 @@ export default function EditorPage() {
             </span>
           </div>
           <div className="h-full pt-10">
-            <LivePreview content={content} theme={theme} templateId={templateId} />
+            <ErrorBoundary resetKey={content}>
+              <LivePreview content={content} theme={theme} templateId={templateId} />
+            </ErrorBoundary>
           </div>
         </div>
       </div>
 
-      {/* Right Sidebar: Editor & AI */}
-      <div className="flex w-[400px] shrink-0 flex-col overflow-y-auto border-l border-border bg-card shadow-[-8px_0_24px_-16px_rgba(17,24,39,0.2)]">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeSection}
-            initial={{ opacity: 0, x: 12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <EditPanel activeSection={activeSection} content={content} theme={theme} onUpdate={handleUpdateSection} />
-          </motion.div>
-        </AnimatePresence>
+      {/* Right Sidebar: Editor (scrolls) + AI panel (pinned at bottom) */}
+      <div className="flex w-[400px] shrink-0 flex-col border-l border-border bg-card shadow-[-8px_0_24px_-16px_rgba(17,24,39,0.2)]">
+        <div className="min-h-0 flex-1 overflow-y-auto bg-background">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -12 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <EditPanel activeSection={activeSection} content={content} theme={theme} onUpdate={handleUpdateSection} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
         <AiPromptPanel content={content} theme={theme} onApply={handleAiUpdate} onUndo={handleUndo} canUndo={history.length > 0} />
       </div>
     </div>

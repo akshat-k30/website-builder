@@ -13,7 +13,20 @@ interface AiPromptPanelProps {
   canUndo: boolean
 }
 
-const SUGGESTIONS = ["Make my tagline more professional", "Rewrite the about section", "Switch to a dark color scheme"]
+// Ensures the AI returned a well-formed content object before we apply it.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isValidContent(c: any): c is WebsiteContent {
+  return (
+    !!c &&
+    typeof c === "object" &&
+    !!c.hero &&
+    !!c.about &&
+    Array.isArray(c.experience) &&
+    !!c.skills &&
+    Array.isArray(c.skills.categories) &&
+    !!c.contact
+  )
+}
 
 export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo }: AiPromptPanelProps) {
   const [prompt, setPrompt] = useState("")
@@ -22,24 +35,37 @@ export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo
   const handlePrompt = async () => {
     if (!prompt.trim()) return
     setIsLoading(true)
+
+    // Abort if the request stalls, so the panel can never get stuck loading forever.
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 45000)
+
     try {
       const res = await fetch("/api/ai-edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, currentContent: content, themeSettings: theme }),
+        signal: controller.signal,
       })
       if (!res.ok) throw new Error("Failed AI edit")
       const data = await res.json()
-      if (data.content && data.themeSettings) {
-        onApply(data.content, data.themeSettings)
-        setPrompt("")
-      } else {
+
+      // Guard against a malformed/partial AI response (e.g. a section removed but the
+      // schema broken) — applying it would corrupt the content and crash the preview.
+      if (!isValidContent(data.content) || !data.themeSettings) {
         throw new Error("Invalid response from AI")
       }
+      onApply(data.content, data.themeSettings)
+      setPrompt("")
     } catch (err) {
       console.error(err)
-      alert("Something went wrong processing your request.")
+      if (err instanceof DOMException && err.name === "AbortError") {
+        alert("The AI request timed out. Please try again — a simpler request may help.")
+      } else {
+        alert("Something went wrong processing your request. Please try again.")
+      }
     } finally {
+      clearTimeout(timeout)
       setIsLoading(false)
     }
   }
@@ -56,9 +82,9 @@ export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo
         {canUndo && (
           <button
             onClick={onUndo}
-            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-bold text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-[0_0_14px_-1px_rgba(67,97,238,0.75)] transition-all hover:-translate-y-px hover:bg-primary-hover hover:shadow-[0_0_20px_1px_rgba(67,97,238,0.9)] [animation:pulse-ring_2.4s_cubic-bezier(0.4,0,0.6,1)_infinite]"
           >
-            <Undo2 className="h-3.5 w-3.5" /> Undo
+            <Undo2 className="h-3.5 w-3.5" /> Undo previous
           </button>
         )}
       </div>
@@ -82,19 +108,6 @@ export default function AiPromptPanel({ content, theme, onApply, onUndo, canUndo
         >
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </button>
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s}
-            onClick={() => setPrompt(s)}
-            disabled={isLoading}
-            className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary disabled:opacity-50"
-          >
-            {s}
-          </button>
-        ))}
       </div>
     </div>
   )

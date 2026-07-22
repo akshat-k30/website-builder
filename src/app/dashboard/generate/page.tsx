@@ -62,7 +62,6 @@ export default function GenerateContentPage() {
       }
     }
     fetchContent()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleSave = async () => {

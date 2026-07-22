@@ -1,5 +1,6 @@
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { safeUrl } from "@/lib/sanitize"
 
 interface TemplateProps {
   content: WebsiteContent
@@ -111,7 +112,7 @@ export default function CreativePortfolio({ content, theme }: TemplateProps) {
           <p className="cp-contact-msg css-reveal rv-up" style={{ animationDelay: ".1s" }}>{contact.message}</p>
           <div className="cp-contact-links css-reveal rv-up" style={{ animationDelay: ".18s" }}>
             {contact.email && <a href={`mailto:${contact.email}`} className="cp-link">{contact.email}</a>}
-            {contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer" className="cp-link">LinkedIn</a>}
+            {contact.linkedin && <a href={safeUrl(contact.linkedin)} target="_blank" rel="noreferrer" className="cp-link">LinkedIn</a>}
           </div>
         </div>
       </section>
@@ -145,14 +146,14 @@ const CP_CSS = `
 .cp-eyebrow { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(16px, 2.4vw, 22px); color: var(--p); margin: 0 0 22px; text-transform: uppercase; }
 .cp-title { font-family: 'Playfair Display', serif; font-weight: 800; font-size: clamp(52px, 12vw, 140px); line-height: 0.94; letter-spacing: -0.03em; margin: 0; color: var(--tx); }
 .cp-tagline { font-family: 'Cormorant Garamond', serif; font-size: clamp(20px, 3.2vw, 32px); font-style: italic; color: color-mix(in srgb, var(--tx) 68%, transparent); margin: 26px auto 0; max-width: 640px; line-height: 1.35; }
-.cp-hero-img { margin: 46px auto 0; width: min(560px, 90%); aspect-ratio: 16/10; overflow: hidden; border-radius: 4px; }
+.cp-hero-img { margin: 40px auto 0; width: min(240px, 62%); aspect-ratio: 4/5; overflow: hidden; border-radius: 6px; }
 .cp-hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cp-hero-cta { display: inline-block; margin-top: 44px; font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--tx); text-decoration: none; border-bottom: 1px solid var(--p); padding-bottom: 3px; transition: color .3s; }
 .cp-hero-cta span { display: inline-block; transition: transform .3s; }
 .cp-hero-cta:hover { color: var(--p); } .cp-hero-cta:hover span { transform: translateX(6px); }
 
 /* Divider line-draw */
-.cp-divider { height: 1px; background: color-mix(in srgb, var(--tx) 20%, transparent); transform-origin: center; }
+.cp-divider { height: 2px; background: linear-gradient(90deg, var(--p), var(--s)); transform-origin: center; }
 .cp-divider.is-visible { animation: cpLine 1.1s cubic-bezier(.22,1,.36,1) forwards; }
 @keyframes cpLine { from { transform: scaleX(0);} to { transform: scaleX(1);} }
 
@@ -168,7 +169,7 @@ const CP_CSS = `
 .cp-rail::-webkit-scrollbar { height: 6px; } .cp-rail::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--tx) 20%, transparent); border-radius: 3px; }
 .cp-rail-card { scroll-snap-align: center; flex: 0 0 min(420px, 82vw); padding: 40px; border: 1px solid color-mix(in srgb, var(--tx) 14%, transparent); border-radius: 6px; background: color-mix(in srgb, var(--tx) 2.5%, transparent); transition: transform .4s, box-shadow .4s, border-color .4s; }
 .cp-rail-card:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--p) 40%, transparent); box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--tx) 40%, transparent); }
-.cp-rail-num { font-family: 'Playfair Display', serif; font-size: 46px; font-weight: 800; color: color-mix(in srgb, var(--p) 30%, transparent); display: block; }
+.cp-rail-num { font-family: 'Playfair Display', serif; font-size: 46px; font-weight: 800; color: var(--s); display: block; }
 .cp-rail-period { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--p); }
 .cp-rail-role { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin: 8px 0 2px; }
 .cp-rail-company { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: color-mix(in srgb, var(--tx) 60%, transparent); margin: 0 0 18px; }
@@ -189,8 +190,8 @@ const CP_CSS = `
 .cp-contact-title { font-family: 'Playfair Display', serif; font-weight: 800; font-size: clamp(40px, 8vw, 88px); line-height: 1; margin: 0 0 22px; letter-spacing: -0.02em; }
 .cp-contact-msg { font-family: 'Cormorant Garamond', serif; font-size: clamp(20px, 3vw, 26px); font-style: italic; color: color-mix(in srgb, var(--tx) 66%, transparent); max-width: 560px; margin: 0 auto 34px; line-height: 1.5; }
 .cp-contact-links { display: flex; gap: 34px; justify-content: center; flex-wrap: wrap; }
-.cp-link { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--tx); text-decoration: none; border-bottom: 1px solid var(--p); padding-bottom: 2px; transition: color .3s; }
-.cp-link:hover { color: var(--p); }
+.cp-link { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--tx); text-decoration: none; border-bottom: 2px solid var(--s); padding-bottom: 2px; transition: color .3s; }
+.cp-link:hover { color: var(--s); }
 
 /* Footer */
 .cp-footer { display: flex; justify-content: space-between; max-width: 1000px; margin: 0 auto; padding: 40px 28px; border-top: 1px solid color-mix(in srgb, var(--tx) 12%, transparent); font-family: 'Cormorant Garamond', serif; font-size: 16px; color: color-mix(in srgb, var(--tx) 55%, transparent); }

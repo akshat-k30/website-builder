@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Menu, X, LogOut, Sparkles } from "lucide-react"
+import { Menu, X, LogOut } from "lucide-react"
 
 const AUTH_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
@@ -42,9 +42,12 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8">
         {/* Brand */}
         <Link href="/" className="group flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white shadow-[var(--shadow-glow)] transition-transform duration-300 group-hover:scale-105">
-            <Sparkles className="h-5 w-5" />
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/profilio-icon-indigo.svg"
+            alt="Profilio"
+            className="h-9 w-9 rounded-xl shadow-[var(--shadow-glow)] transition-transform duration-300 group-hover:scale-105"
+          />
           <span className="text-lg font-extrabold tracking-tight text-foreground">Profilio</span>
         </Link>
 

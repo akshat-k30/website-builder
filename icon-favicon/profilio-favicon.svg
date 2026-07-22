@@ -1,0 +1,7 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <title>Profilio favicon</title>
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#3C3489"/>
+  <rect x="20" y="17" width="9" height="32" rx="3" fill="#FFFFFF"/>
+  <circle cx="32" cy="25" r="13" fill="#FFFFFF"/>
+  <polygon points="39,12 47,12 47,18" fill="#3C3489"/>
+</svg>

@@ -2,6 +2,7 @@ import { renderToString } from "react-dom/server.browser"
 import type { ComponentType } from "react"
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
+import { sanitizeContent } from "@/lib/sanitize"
 
 // We must import the templates directly (not via next/dynamic) for server-side rendering to string
 import ModernMinimal from "@/components/templates/ModernMinimal"
@@ -28,11 +29,12 @@ export function generateStaticHtml(
   templateId: string
 ): string {
   const TemplateComponent = templateMap[templateId] || templateMap["modern-minimal"]
+  const safeContent = sanitizeContent(content)
 
   // Render the React component to an HTML string
   const renderedComponent = renderToString(
     <div className="min-h-screen">
-      <TemplateComponent content={content} theme={theme} />
+      <TemplateComponent content={safeContent} theme={theme} />
       {/* Powered by footer */}
       <div
         className="py-3 text-center text-[11px] font-semibold tracking-wide opacity-40"
@@ -59,7 +61,7 @@ export function generateStaticHtml(
   <!-- Add any required fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
   
   <style>
     body {

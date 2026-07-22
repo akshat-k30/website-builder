@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { SectionType } from "@/app/dashboard/editor/page"
 import { WebsiteContent } from "@/types/website"
 import { TemplateTheme } from "@/lib/templates"
@@ -45,6 +46,14 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
     }
   }
 
+  const removeExperience = (index: number) =>
+    onUpdate("experience", content.experience.filter((_, i) => i !== index))
+  const addExperience = () =>
+    onUpdate("experience", [
+      ...content.experience,
+      { company: "", role: "", period: "", highlights: [""] },
+    ])
+
   // --- Skills editing (add/remove categories and items) ---
   const skillCategories = content.skills?.categories ?? []
   const commitSkills = (categories: { name: string; items: string[] }[]) =>
@@ -68,7 +77,7 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
     )
 
   return (
-    <div className="flex-1 p-6 overflow-y-auto bg-background">
+    <div className="p-6 bg-background">
       <h3 className="text-xl font-bold text-foreground mb-6 capitalize border-b border-border pb-4">
         {activeSection === "theme" ? "Theme Settings" : `${activeSection} Section`}
       </h3>
@@ -96,20 +105,42 @@ export default function EditPanel({ activeSection, content, theme, onUpdate }: E
               <div key={idx} className="p-5 bg-card rounded-xl border border-border space-y-4 shadow-sm">
                 <div className="flex justify-between items-center mb-2">
                   <h4 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Experience {idx + 1}</h4>
+                  <button
+                    onClick={() => removeExperience(idx)}
+                    aria-label={`Remove experience ${idx + 1}`}
+                    className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-red-500 transition-colors hover:bg-red-500/10"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Remove
+                  </button>
                 </div>
                 <InputField label="Role" value={exp.role} onChange={(v) => handleArrayChange(idx, "role", v)} />
                 <div className="grid grid-cols-2 gap-4">
                   <InputField label="Company" value={exp.company} onChange={(v) => handleArrayChange(idx, "company", v)} />
                   <InputField label="Period" value={exp.period} onChange={(v) => handleArrayChange(idx, "period", v)} />
                 </div>
-                <TextAreaField 
-                  label="Highlights (one per line)" 
-                  value={exp.highlights.join("\n")} 
-                  onChange={(v) => handleArrayChange(idx, "highlights", v.split("\n"))} 
+                <TextAreaField
+                  label="Highlights (one per line)"
+                  value={exp.highlights.join("\n")}
+                  onChange={(v) => handleArrayChange(idx, "highlights", v.split("\n"))}
                   rows={4}
                 />
               </div>
             ))}
+            {content.experience.length === 0 && (
+              <p className="text-sm font-medium text-muted-foreground text-center py-4">No experience entries yet.</p>
+            )}
+            <button
+              onClick={addExperience}
+              className="w-full py-3 rounded-xl border-2 border-dashed border-border text-sm font-bold text-muted-foreground hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add experience
+            </button>
           </div>
         )}
 
@@ -299,43 +330,56 @@ function SelectField({ label, value, options, onChange }: { label: string; value
 }
 
 function ImageUploadField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [uploading, setUploading] = useState(false)
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    // Ensure it's an image
     if (!file.type.startsWith("image/")) {
       alert("Please upload an image file.")
       return
     }
-
-    // Convert to base64 Data URL
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const base64String = event.target?.result as string
-      onChange(base64String)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be under 5MB.")
+      return
     }
-    reader.readAsDataURL(file)
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await fetch("/api/upload-image", { method: "POST", body: formData })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Upload failed")
+      onChange(data.url)
+    } catch (err) {
+      console.error(err)
+      alert(err instanceof Error ? err.message : "Failed to upload image.")
+    } finally {
+      setUploading(false)
+      // Allow re-selecting the same file
+      e.target.value = ""
+    }
   }
 
   return (
     <div>
       <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</label>
-      
+
       {value ? (
         <div className="flex items-start gap-4 p-4 border border-border rounded-xl bg-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src={value} 
-            alt="Profile Preview" 
-            className="w-16 h-16 rounded-full object-cover border border-border shadow-sm shrink-0" 
+          <img
+            src={value}
+            alt="Profile Preview"
+            className="w-16 h-16 rounded-full object-cover border border-border shadow-sm shrink-0"
           />
           <div className="flex-1">
             <p className="text-sm font-medium text-foreground mb-1">Photo uploaded</p>
             <p className="text-xs text-muted-foreground mb-3">This photo will appear on your generated website.</p>
             <button
               onClick={() => onChange("")}
-              className="text-xs font-bold text-red-500 hover:text-red-600 px-3 py-1.5 rounded bg-red-50 hover:bg-red-100 transition-colors"
+              className="text-xs font-bold text-red-500 hover:text-red-600 px-3 py-1.5 rounded hover:bg-red-500/10 transition-colors"
             >
               Remove Photo
             </button>
@@ -343,19 +387,27 @@ function ImageUploadField({ label, value, onChange }: { label: string; value: st
         </div>
       ) : (
         <div className="relative border-2 border-dashed border-border rounded-xl bg-muted/30 p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors group cursor-pointer">
-          <input 
-            type="file" 
+          <input
+            type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            disabled={uploading}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-wait"
           />
           <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
+            {uploading ? (
+              <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            )}
           </div>
-          <p className="text-sm font-semibold text-foreground mb-1">Click to upload photo</p>
-          <p className="text-xs text-muted-foreground">JPEG, PNG, or WebP</p>
+          <p className="text-sm font-semibold text-foreground mb-1">{uploading ? "Uploading…" : "Click to upload photo"}</p>
+          <p className="text-xs text-muted-foreground">JPEG, PNG, or WebP · up to 5MB</p>
         </div>
       )}
     </div>

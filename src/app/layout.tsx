@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: "Profilio - AI-Powered Personal Websites",
   description:
     "Paste your LinkedIn URL, generate a professional website with AI, and publish in minutes.",
+  icons: {
+    icon: [{ url: "/profilio-favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/profilio-favicon.svg",
+    apple: "/profilio-icon-indigo.svg",
+  },
 }
 
 export default function RootLayout({

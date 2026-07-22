@@ -1,0 +1,7 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <title>Profilio icon</title>
+  <rect x="0" y="0" width="512" height="512" rx="109" fill="#3C3489"/>
+  <rect x="164" y="137" width="68" height="259" rx="27" fill="#FFFFFF"/>
+  <circle cx="259" cy="198" r="102" fill="#FFFFFF"/>
+  <polygon points="328,96 376,96 376,144" fill="#3C3489"/>
+</svg>

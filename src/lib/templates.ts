@@ -77,7 +77,7 @@ export const availableTemplates: TemplateDefinition[] = [
       secondaryColor: "#ec4899",
       backgroundColor: "#fdfcff",
       textColor: "#1a1523",
-      fontFamily: "'Syne', sans-serif",
+      fontFamily: "'Manrope', sans-serif",
     },
   },
   {
@@ -90,7 +90,7 @@ export const availableTemplates: TemplateDefinition[] = [
       secondaryColor: "#8a6d3b",
       backgroundColor: "#0e0e10",
       textColor: "#ece8e1",
-      fontFamily: "'Libre Bodoni', serif",
+      fontFamily: "'Public Sans', sans-serif",
     },
   },
 ]
